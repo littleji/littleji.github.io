@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • 概率图模型之一(ProbabilisticGraphicalModel-PGM)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="概率图模型之一(ProbabilisticGraphicalModel-PGM)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20181022probabilisticgraphicalmodels1&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            概率图模型之一(ProbabilisticGraphicalModel-PGM)
+        </h1>
+
+        <ul class="meta">
+                <li>22nd Oct 2018</li><li title="1652 words"><span class='separator' aria-hidden='true'>•</span>9 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/gai-lu-tu-pgm/">概率图(PGM)</a>,&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/ji-qi-xue-xi-machinelearning/">机器学习(MachineLearning)</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#gai-lu-tu-gai-shu">概率图概述</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#wu-xiang-tu-mo-xing-he-you-xiang-tu-mo-xing-de-qu-bie">无向图模型和有向图模型的区别</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#sheng-cheng-shi-mo-xing">生成式模型</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#pan-bie-shi-mo-xing">判别式模型</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#bei-xie-si-wang-luo">贝叶斯网络</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#gou-zao-bei-xie-si-wang-luo">构造贝叶斯网络</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#biao-shi">表示</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#tui-duan">推断</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#xue-xi">学习</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#mle-map-bei-xie-si-gu-ji-zhi-jian-de-guan-xi">MLE MAP 贝叶斯估计之间的关系</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h1 id="gai-lu-tu-gai-shu"><a class="header-anchor no-hover-padding" href="#gai-lu-tu-gai-shu" aria-label="Anchor link for: gai-lu-tu-gai-shu"><span class="link-icon" aria-hidden="true"></span></a>
+概率图概述</h1>
+<p>概率图模型使用图的方法来表示概率分布，在该模型中，结点表示变量，节点之间的边表示变量之间的概略关系。</p>
+<p>根据图模型中的边是否有向，将概率图的代表模型如下：
+￼
+<img src="https://user-images.githubusercontent.com/7655877/47288361-5f420c00-d628-11e8-9ad1-555e47176c16.png" alt="image" /></p>
+<h2 id="wu-xiang-tu-mo-xing-he-you-xiang-tu-mo-xing-de-qu-bie"><a class="header-anchor no-hover-padding" href="#wu-xiang-tu-mo-xing-he-you-xiang-tu-mo-xing-de-qu-bie" aria-label="Anchor link for: wu-xiang-tu-mo-xing-he-you-xiang-tu-mo-xing-de-qu-bie"><span class="link-icon" aria-hidden="true"></span></a>
+无向图模型和有向图模型的区别</h2>
+<p>这里要说明的是,采用有向图的贝叶斯网络的"有向"表示的是依存关系,具有因果推断,即A-&gt;B-&gt;C,反之则不可.
+而无向图的代表马尔科夫网络,采用的无向图</p>
+<p>各个图模型的演变关系如下：</p>
+<p><img src="https://user-images.githubusercontent.com/7655877/47288381-7a148080-d628-11e8-836a-fbe66c555d01.png" alt="image" /></p>
+<p>其中横向，由点到线（序列结构），最终到面。
+纵向则是在一定的条件下生成式模型转换为判别式模型。
+下面假设有观测序列x，状态序列y，并依次来说明生成式与判别式模型的区别。</p>
+<h2 id="sheng-cheng-shi-mo-xing"><a class="header-anchor no-hover-padding" href="#sheng-cheng-shi-mo-xing" aria-label="Anchor link for: sheng-cheng-shi-mo-xing"><span class="link-icon" aria-hidden="true"></span></a>
+生成式模型</h2>
+<p>生成式模型的定义是：“状态（输出）序列y按照一定的规律生成观测（输入）序列x”。生成式模型的本质是对于联合概率分布p(x,y)进行建模，并根据生成概率最大的生成序列来获取y。</p>
+<p>这类模型中，一般有严格的独立性假设，模型变量之间的关系清楚，处理单类问题时较为灵活。</p>
+<p>弱点是模型的推导与学习较为复杂。</p>
+<p>主要的模型有：n-gram，HMM、朴素贝叶斯、概率上下文无关文法。</p>
+<h2 id="pan-bie-shi-mo-xing"><a class="header-anchor no-hover-padding" href="#pan-bie-shi-mo-xing" aria-label="Anchor link for: pan-bie-shi-mo-xing"><span class="link-icon" aria-hidden="true"></span></a>
+判别式模型</h2>
+<p>判别式模型的定义是：“状态（输出）序列y是由观测序列（输入）所决定的。”判别式模型的本质是对后验概率p（y|x）进行建模，优点是处理多累问题或分辨某一类与其他类差异时更为灵活，模型构造简单。</p>
+<p>缺点是模型的描述能力有限，变量之间的关系不清楚。大多数模型都是有监督学习，不能很好地扩展为无监督学习。</p>
+<p>主要模型有：最大熵模型、最大熵马尔科夫模型、支持向量机、条件随机场、感知机。</p>
+<h1 id="bei-xie-si-wang-luo"><a class="header-anchor no-hover-padding" href="#bei-xie-si-wang-luo" aria-label="Anchor link for: bei-xie-si-wang-luo"><span class="link-icon" aria-hidden="true"></span></a>
+贝叶斯网络</h1>
+<p>贝叶斯网络也称为belief networks，是一种基于概率推理的数学模型，理论基础为贝叶斯公式。</p>
+<p>贝叶斯网络形式上是一个有向无环图（DAG directed acyclic graph），结点表示随机变量，结点之间的边表示条件依存关系，箭头出发的节点为父节点，箭头到达的节点为子节点，子节点依存于父节点。</p>
+<p>如果两个节点没有连接关系，表示两个随机变量能够在某些特定情况下条件独立。</p>
+<h2 id="gou-zao-bei-xie-si-wang-luo"><a class="header-anchor no-hover-padding" href="#gou-zao-bei-xie-si-wang-luo" aria-label="Anchor link for: gou-zao-bei-xie-si-wang-luo"><span class="link-icon" aria-hidden="true"></span></a>
+构造贝叶斯网络</h2>
+<p>构造贝叶斯网络是一个复杂的任务，其主要有三个方面的问题：表示、推断、学习</p>
+<h3 id="biao-shi"><a class="header-anchor no-hover-padding" href="#biao-shi" aria-label="Anchor link for: biao-shi"><span class="link-icon" aria-hidden="true"></span></a>
+表示</h3>
+<p>在简单某一随机变量的组合上
+<img src="https://user-images.githubusercontent.com/7655877/47356431-a4cd0a80-d6f6-11e8-9304-e72390800815.png" alt="image" />
+即便是随机变量只有两个取值，那么联合概率分布P需要对 2^n 种不同取值下的概率情况进行说明，然而这件事的计算代价非常高。</p>
+<h3 id="tui-duan"><a class="header-anchor no-hover-padding" href="#tui-duan" aria-label="Anchor link for: tui-duan"><span class="link-icon" aria-hidden="true"></span></a>
+推断</h3>
+<p>由于贝叶斯网络是变量以及关系的完整模型，那么在观测到某些变量变化的时候就需要使用一些推断方法，来得知另一些变量子集的变化。
+概率推理：在已知某些证据的情况下，计算变量的后验分布的过程。
+常用的精确推理方法有两种</p>
+<ul>
+<li>变量消除法 variable elimination</li>
+<li>团树法 clique tree</li>
+</ul>
+<p>常用的近似推理</p>
+<ul>
+<li>重要性抽样 importance sampling</li>
+<li>随机马尔科夫链蒙特卡洛模拟法 Markov chain Monte Carlo，MCMC</li>
+<li>循环信念传播法 loopy belief propagation</li>
+<li>泛化信念传播法 generalized belief propagation</li>
+</ul>
+<h3 id="xue-xi"><a class="header-anchor no-hover-padding" href="#xue-xi" aria-label="Anchor link for: xue-xi"><span class="link-icon" aria-hidden="true"></span></a>
+学习</h3>
+<p>参数学习的目的就是得知各个变量结点之间相互依存的强度。
+比如给定某个节点X，需要计算 P(X|父节点1，父节点2...)，这些概率分布可以是任意形式，通常是离散分布与高斯分布。</p>
+<p>常用的参数学习方法包括：</p>
+<ul>
+<li>最大似然估计 MLE</li>
+<li>最大后验概率 MAP</li>
+<li>期望最大 EM</li>
+<li>贝叶斯估计方法，贝叶斯图模型中，使用较多的是该种方法</li>
+</ul>
+<p>除了参数学习，还需要结构学习来学习各个变量之间的图关系，简单的贝叶斯可以由有经验的专家来构造，但一般情况下人工构造一个贝叶斯网络的结构几乎不可能，所以自动结构学习是一项颇具挑战的任务。</p>
+<h2 id="mle-map-bei-xie-si-gu-ji-zhi-jian-de-guan-xi"><a class="header-anchor no-hover-padding" href="#mle-map-bei-xie-si-gu-ji-zhi-jian-de-guan-xi" aria-label="Anchor link for: mle-map-bei-xie-si-gu-ji-zhi-jian-de-guan-xi"><span class="link-icon" aria-hidden="true"></span></a>
+MLE MAP 贝叶斯估计之间的关系</h2>
+<p>其中，最大似然估计（MLE）是频率派的代表，贝叶斯估计（Bayes）是贝叶斯派的代表，最大后验估计是频率派和贝叶斯派的合成，是一种规则化后的最大似然估计。</p>
+<p>一般来说，在我们对于先验概率一无所知时，只能假设每种猜测的先验概率是均等的（其实这也是人类经验的结果），这个时候就只有用最大似然了，但不能忘记一个重要的前提是所有的采样都是独立同分布。</p>
+<p>如果我们有足够的自信，训练集中的样本分布的确很接近真实的情况，这时就应该用贝叶斯方法。贝叶斯学派强调的是“靠谱的先验概率”。所以说贝叶斯学派的适用范围更广，关键要先验概率靠谱，而频率学派有效的前提也是他们的先验概率同样是经验统计的结果。但也说明了贝叶斯计算要更为复杂，因为需要选择一个常用分布，并确定一个初始参数集作为先验分布。</p>
+<p>再者，MAP与MLE最大区别是MAP中加入了模型参数本身的概率分布，即是否考虑了先验知识。或者说。MLE中认为模型参数本身的概率的是均匀的，即该概率为一个固定值。</p>
+<h1 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h1>
+<p>统计自然语言处理（第2版）
+<a href="https://blog.csdn.net/Mr_tyting/article/details/62882162?utm_source=blogxgwz1">1</a>
+<a href="https://blog.csdn.net/juanjuan1314/article/details/78189527">2</a>
+<a href="https://zhuanlan.zhihu.com/p/32568242">3</a>
+<a href="https://zhuanlan.zhihu.com/p/32616870">4</a>
+<a href="https://blog.csdn.net/guohecang/article/details/52313046">5</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">Logstash Grok 概览(OverviewOfLogstashGrok)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20181016formallanguagegenerality/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">形式语言概述(OverviewOfFromalLanguage)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#gai-lu-tu-gai-shu">概率图概述</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#wu-xiang-tu-mo-xing-he-you-xiang-tu-mo-xing-de-qu-bie">无向图模型和有向图模型的区别</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#sheng-cheng-shi-mo-xing">生成式模型</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#pan-bie-shi-mo-xing">判别式模型</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#bei-xie-si-wang-luo">贝叶斯网络</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#gou-zao-bei-xie-si-wang-luo">构造贝叶斯网络</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#biao-shi">表示</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#tui-duan">推断</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#xue-xi">学习</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#mle-map-bei-xie-si-gu-ji-zhi-jian-de-guan-xi">MLE MAP 贝叶斯估计之间的关系</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

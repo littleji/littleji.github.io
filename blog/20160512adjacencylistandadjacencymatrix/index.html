@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • 邻接矩阵,邻接列表一些基本概念和应用(Adjacency list and Adjacency matrix)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="邻接矩阵,邻接列表一些基本概念和应用(Adjacency list and Adjacency matrix)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20160512adjacencylistandadjacencymatrix&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            邻接矩阵,邻接列表一些基本概念和应用(Adjacency list and Adjacency matrix)
+        </h1>
+
+        <ul class="meta">
+                <li>12th May 2016</li><li title="626 words"><span class='separator' aria-hidden='true'>•</span>4 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/suan-fa-yu-shu-ju-jie-gou-algorithm-datastructure/">算法与数据结构(Algorithm&amp;DataStructure)</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-ju-zhen">邻接矩阵</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#gai-shu">概述</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#xing-zhi">性质</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#wu-xiang-tu-de-lin-jie-ju-zhen-dui-cheng-ju-zhen">无向图的邻接矩阵对称矩阵</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-ju-zhen-de-da-xiao-ding-dian-shu-ding-dian-shu">邻接矩阵的大小=顶点数*顶点数</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#shu-ju-ya-suo-de-shu-xing">数据压缩的属性</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-lian-biao">邻接链表</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#gai-shu-1">概述</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#can-kao">参考:</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h3 id="lin-jie-ju-zhen"><a class="header-anchor no-hover-padding" href="#lin-jie-ju-zhen" aria-label="Anchor link for: lin-jie-ju-zhen"><span class="link-icon" aria-hidden="true"></span></a>
+邻接矩阵</h3>
+<h4 id="gai-shu"><a class="header-anchor no-hover-padding" href="#gai-shu" aria-label="Anchor link for: gai-shu"><span class="link-icon" aria-hidden="true"></span></a>
+概述</h4>
+<p>邻接矩阵,其只要是用来存储一个图结构.</p>
+<p>首先一个无向图如下所示</p>
+<div align=center>
+<img class="little" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/6n-graph2.svg/185px-6n-graph2.svg.png" />
+</div>
+<div align=center>
+<img class="little" src="https://upload.wikimedia.org/math/c/a/e/caec49086f2faf102df7972d0dcde54b.png"  />
+</div>
+<h4 id="xing-zhi"><a class="header-anchor no-hover-padding" href="#xing-zhi" aria-label="Anchor link for: xing-zhi"><span class="link-icon" aria-hidden="true"></span></a>
+性质</h4>
+<h5 id="wu-xiang-tu-de-lin-jie-ju-zhen-dui-cheng-ju-zhen"><a class="header-anchor no-hover-padding" href="#wu-xiang-tu-de-lin-jie-ju-zhen-dui-cheng-ju-zhen" aria-label="Anchor link for: wu-xiang-tu-de-lin-jie-ju-zhen-dui-cheng-ju-zhen"><span class="link-icon" aria-hidden="true"></span></a>
+无向图的邻接矩阵对称矩阵</h5>
+<p>由上图发现该图其实是个对称矩阵,这是由无向图的性质决定的,无向图的各个顶点之间的连线是具有相互性的,于是每有一个顶点之间的连线就要延伸出一组关系,表现在邻接矩阵上就是对称点的值相同(a12 = a21 依次类推)</p>
+<h5 id="lin-jie-ju-zhen-de-da-xiao-ding-dian-shu-ding-dian-shu"><a class="header-anchor no-hover-padding" href="#lin-jie-ju-zhen-de-da-xiao-ding-dian-shu-ding-dian-shu" aria-label="Anchor link for: lin-jie-ju-zhen-de-da-xiao-ding-dian-shu-ding-dian-shu"><span class="link-icon" aria-hidden="true"></span></a>
+邻接矩阵的大小=顶点数*顶点数</h5>
+<p>很容易了解,一个图的顶点数决定了其对应邻接矩阵的大小,例如上图是个6个顶点的图,则对应的矩阵需要6*6的大小方可表达其结构</p>
+<h5 id="shu-ju-ya-suo-de-shu-xing"><a class="header-anchor no-hover-padding" href="#shu-ju-ya-suo-de-shu-xing" aria-label="Anchor link for: shu-ju-ya-suo-de-shu-xing"><span class="link-icon" aria-hidden="true"></span></a>
+数据压缩的属性</h5>
+<ul>
+<li>由于事实上每一组顶点关系只需要一位来来表达,处理一个有4个顶点的图仅仅需要 4<em>4/8个=2个字节,这是很节省空间的,如果是一个无向图的话,所需要的空间则可以再减少一半的空间 4</em>4/16个=1个字节,通过这个方法已经接近信息论中表达一个n个顶点所需要字节数的下界.</li>
+<li>但是也存在一些问题,例如其可能需要存储那些本来不存在的边</li>
+</ul>
+<h3 id="lin-jie-lian-biao"><a class="header-anchor no-hover-padding" href="#lin-jie-lian-biao" aria-label="Anchor link for: lin-jie-lian-biao"><span class="link-icon" aria-hidden="true"></span></a>
+邻接链表</h3>
+<h4 id="gai-shu-1"><a class="header-anchor no-hover-padding" href="#gai-shu-1" aria-label="Anchor link for: gai-shu-1"><span class="link-icon" aria-hidden="true"></span></a>
+概述</h4>
+<p>邻接链表也是一种表达图的方式
+假设有无向图如下所示</p>
+ <div align=center>
+<img class="little" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Simple_cycle_graph.svg/120px-Simple_cycle_graph.svg.png"  align=center >
+ </div>
+<p>则相对应的表示为三个list{b,c},{a,c},{a,b}
+但是换出去空间的节省后,查询时间也会相应的边长
+例如:查询a与b是否有关系需要首先定位到a的链表{b,c},再对这个链表进行遍历,如果没有b,也就说明对其进行了完整的遍历,浪费了较多的时间,当然可以采用快速搜索的方式进行优化</p>
+<ul>
+<li>事实上邻接列表还有一点是其应用在大型稀疏矩阵中,因为邻接矩阵不需要浪费空间来表达那些不存在的边缘</li>
+</ul>
+<h5 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考:</h5>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Adjacency_matrix">Adjacency_matrix</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Adjacency_list">Adjacency_list</a></li>
+</ul>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20161115almostperfectgitconfiguration/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">Centos7下git较为完整安装与配置,解决git clone速度慢等问题(Almost perfect git configuration)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20160510somethingaboutsitemanagement/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">建站中的一些问题</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-ju-zhen">邻接矩阵</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#gai-shu">概述</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#xing-zhi">性质</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#wu-xiang-tu-de-lin-jie-ju-zhen-dui-cheng-ju-zhen">无向图的邻接矩阵对称矩阵</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-ju-zhen-de-da-xiao-ding-dian-shu-ding-dian-shu">邻接矩阵的大小=顶点数*顶点数</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#shu-ju-ya-suo-de-shu-xing">数据压缩的属性</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#lin-jie-lian-biao">邻接链表</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#gai-shu-1">概述</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20160512adjacencylistandadjacencymatrix/#can-kao">参考:</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

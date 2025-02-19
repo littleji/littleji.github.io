@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • 在alpine上，从零开始安装DVWA(Alpine for DWVA from Scratch)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="在alpine上，从零开始安装DVWA(Alpine for DWVA from Scratch)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20180925installdvwaonalpinefromscratch&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            在alpine上，从零开始安装DVWA(Alpine for DWVA from Scratch)
+        </h1>
+
+        <ul class="meta">
+                <li>25th Sep 2018</li><li title="896 words"><span class='separator' aria-hidden='true'>•</span>5 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/linux-linux/">Linux(Linux)</a>,&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/xin-xi-an-quan-infosec/">信息安全(InfoSec)</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#bei-jing">背景</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#alpinexi-tong">alpine系统</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#dvwa">DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-alpinexi-tong">安装alpine系统</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-xi-tong-bi-bei-zu-jian">安装系统必备组件</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-bash-vim">安装Bash、Vim</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#kai-qi-yuan-cheng-rootdeng-lu-de-quan-xian-yi-ji-kuo-zhan-de-bao-jing-xiang-yuan">开启远程root登录的权限以及扩展的包镜像源</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#kai-qi-community-testing-edgebao-cang-ku">开启community testing edge包仓库</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-mysql-mariadb">安装配置 MySQL&#x2F;MariaDB</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-mariadb">安装MariaDB</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#pei-zhi-mariadb">配置MariaDB</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#she-ding-huan-jing-bian-liang-shao-hou-shi-yong">设定环境变量，稍后使用</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#qi-dong-pei-zhi-mariadb">启动配置MariaDB</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#qi-dong-mariadb-bing-tian-jia-mo-ren-qi-dong">启动 MariaDB 并添加默认启动</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#gai-root-mi-ma">改 root 密码</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#chuang-jian-yi-ge-dvwayong-hu-yi-ji-dvwashu-ju-ku">创建一个dvwa用户，以及dvwa数据库</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#zhong-qi-zhu-ji-yan-zheng-shi-fou-an-zhuang-wan-cheng">重启主机，验证是否安装完成</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-php-yi-ji-suo-xu-yao-de-ku-zu-jian">安装PHP 以及所需要的库组件</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-lighttp">安装配置 lighttp</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-dvwa">安装配置 DVWA</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#chuang-jian-xiang-mu-wen-jian-jia">创建项目文件夹</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#xia-zai-dvwa">下载DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#jiang-dvwafang-dao-zhi-ding-de-webxiang-mu-mu-lu-zhong">将DVWA放到指定的web项目目录中</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#pei-zhi-dvwa">配置DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#yan-zheng-an-zhuang-qing-kuang">验证安装情况</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h1 id="bei-jing"><a class="header-anchor no-hover-padding" href="#bei-jing" aria-label="Anchor link for: bei-jing"><span class="link-icon" aria-hidden="true"></span></a>
+背景</h1>
+<h2 id="alpinexi-tong"><a class="header-anchor no-hover-padding" href="#alpinexi-tong" aria-label="Anchor link for: alpinexi-tong"><span class="link-icon" aria-hidden="true"></span></a>
+alpine系统</h2>
+<p>目前 alpine 系统已经作为 docker 容器的默认安装系统，其最大的特点是安装的体积非常小，镜像的大小最少只有 5M ，这对于在 docker 集群中大规模使用容器的情况下，极大的降低了磁盘占用，并且其还有：</p>
+<ol>
+<li>因体积较小，从而提升了启动速度
+2.因体积小，组件少，从而暴露面降低，最终提升系统的安全</li>
+</ol>
+<p>当我们能够熟练的配置该系统之后，可以大大加快 devops 的整体流程，迅速搭建原型系统，提高资源的利用率。</p>
+<h2 id="dvwa"><a class="header-anchor no-hover-padding" href="#dvwa" aria-label="Anchor link for: dvwa"><span class="link-icon" aria-hidden="true"></span></a>
+DVWA</h2>
+<p>DVWA:Damn Vulnerable Web Application</p>
+<p>老牌的安全测试靶场，后端使用的是 PHP + MySQL 的组合，可以方便快捷的让安全从业者，对常见的安全漏洞的原理进行学习，并在实践中巩固自己的学习成果。</p>
+<p>DVWA的官网在<a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/2">这里</a>。</p>
+<h1 id="an-zhuang-alpinexi-tong"><a class="header-anchor no-hover-padding" href="#an-zhuang-alpinexi-tong" aria-label="Anchor link for: an-zhuang-alpinexi-tong"><span class="link-icon" aria-hidden="true"></span></a>
+安装alpine系统</h1>
+<p>首先从 alpine 的<a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/1">官网</a>，根据需要下载指定的alpine安装包，这里选择了 3.8.1 的Extend版本。</p>
+<p>之后，可以将下载的iso文件制作成U盘启动器进行安装，这里由于演示使用 VMware Fusion 进行安装演示。</p>
+<p>虚拟机的配置为默认配置如下：
+￼
+<img src="https://user-images.githubusercontent.com/7655877/45987778-f5285c80-c0a5-11e8-8fbe-b63975cc7999.png" alt="image" /></p>
+<p>启动后直接使用 root 账号登录，并输入 <code>setup-alpine</code> ，进入配置界面，这里的操作的目的是将目前运行在内存中的系统，配置完整后安装至实际的硬盘上，如下图所示：</p>
+<p><img src="https://user-images.githubusercontent.com/7655877/45991497-c6b37d00-c0b7-11e8-9e4e-93541bb790f3.png" alt="image" /></p>
+<p>图中可根据自己的需要配置，如键盘的布局、主机名、网卡信息、时间服务器组件、root密码、时区等，本文选择时区为Asia/Shanghai，重点是选择安装的实际物理磁盘（ sda ）以及安装的用途（ sys ）</p>
+<p><img src="https://user-images.githubusercontent.com/7655877/45996293-48aea080-c0ce-11e8-99da-a06a52475a94.png" alt="image" /></p>
+<p>安装完成后 reboot</p>
+<h1 id="an-zhuang-xi-tong-bi-bei-zu-jian"><a class="header-anchor no-hover-padding" href="#an-zhuang-xi-tong-bi-bei-zu-jian" aria-label="Anchor link for: an-zhuang-xi-tong-bi-bei-zu-jian"><span class="link-icon" aria-hidden="true"></span></a>
+安装系统必备组件</h1>
+<h2 id="an-zhuang-bash-vim"><a class="header-anchor no-hover-padding" href="#an-zhuang-bash-vim" aria-label="Anchor link for: an-zhuang-bash-vim"><span class="link-icon" aria-hidden="true"></span></a>
+安装Bash、Vim</h2>
+<pre class="z-code"><code><span class="z-text z-plain">apk add bash vim
+</span></code></pre>
+<h1 id="kai-qi-yuan-cheng-rootdeng-lu-de-quan-xian-yi-ji-kuo-zhan-de-bao-jing-xiang-yuan"><a class="header-anchor no-hover-padding" href="#kai-qi-yuan-cheng-rootdeng-lu-de-quan-xian-yi-ji-kuo-zhan-de-bao-jing-xiang-yuan" aria-label="Anchor link for: kai-qi-yuan-cheng-rootdeng-lu-de-quan-xian-yi-ji-kuo-zhan-de-bao-jing-xiang-yuan"><span class="link-icon" aria-hidden="true"></span></a>
+开启远程root登录的权限以及扩展的包镜像源</h1>
+<p>方便直接通过远程终端进行操作，打开<code>vim /etc/ssh/sshd_config</code>，在配置文件的末尾添加：</p>
+<pre class="z-code"><code><span class="z-text z-plain">PermitRootLogin yes
+</span></code></pre>
+<p>重启 ssh 服务，<code>service sshd restart</code></p>
+<h1 id="kai-qi-community-testing-edgebao-cang-ku"><a class="header-anchor no-hover-padding" href="#kai-qi-community-testing-edgebao-cang-ku" aria-label="Anchor link for: kai-qi-community-testing-edgebao-cang-ku"><span class="link-icon" aria-hidden="true"></span></a>
+开启community testing edge包仓库</h1>
+<pre class="z-code"><code><span class="z-text z-plain">vim /etc/apk/repositories
+</span></code></pre>
+<p>将其中所有对应的库链接注释打开</p>
+<h1 id="an-zhuang-pei-zhi-mysql-mariadb"><a class="header-anchor no-hover-padding" href="#an-zhuang-pei-zhi-mysql-mariadb" aria-label="Anchor link for: an-zhuang-pei-zhi-mysql-mariadb"><span class="link-icon" aria-hidden="true"></span></a>
+安装配置 MySQL/MariaDB</h1>
+<h2 id="an-zhuang-mariadb"><a class="header-anchor no-hover-padding" href="#an-zhuang-mariadb" aria-label="Anchor link for: an-zhuang-mariadb"><span class="link-icon" aria-hidden="true"></span></a>
+安装MariaDB</h2>
+<pre class="z-code"><code><span class="z-text z-plain">apk add mariadb mariadb-client
+</span></code></pre>
+<h2 id="pei-zhi-mariadb"><a class="header-anchor no-hover-padding" href="#pei-zhi-mariadb" aria-label="Anchor link for: pei-zhi-mariadb"><span class="link-icon" aria-hidden="true"></span></a>
+配置MariaDB</h2>
+<p>MariaDB安装后还不能直接使用，需要创建用户等配置工作</p>
+<h3 id="she-ding-huan-jing-bian-liang-shao-hou-shi-yong"><a class="header-anchor no-hover-padding" href="#she-ding-huan-jing-bian-liang-shao-hou-shi-yong" aria-label="Anchor link for: she-ding-huan-jing-bian-liang-shao-hou-shi-yong"><span class="link-icon" aria-hidden="true"></span></a>
+设定环境变量，稍后使用</h3>
+<pre class="z-code"><code><span class="z-text z-plain">export DB_DATA_PATH=/var/lib/mysql
+</span><span class="z-text z-plain">export DB_ROOT_PASS=root_password
+</span><span class="z-text z-plain">export DB_USER=dvwa
+</span><span class="z-text z-plain">export DB_PASS=dvwa_password
+</span></code></pre>
+<h2 id="qi-dong-pei-zhi-mariadb"><a class="header-anchor no-hover-padding" href="#qi-dong-pei-zhi-mariadb" aria-label="Anchor link for: qi-dong-pei-zhi-mariadb"><span class="link-icon" aria-hidden="true"></span></a>
+启动配置MariaDB</h2>
+<pre class="z-code"><code><span class="z-text z-plain">mysql_install_db --user=mysql --datadir=${DB_DATA_PATH} &amp;&amp;\
+</span><span class="z-text z-plain">chown -R mysql:mysql ${DB_DATA_PATH} 
+</span></code></pre>
+<h2 id="qi-dong-mariadb-bing-tian-jia-mo-ren-qi-dong"><a class="header-anchor no-hover-padding" href="#qi-dong-mariadb-bing-tian-jia-mo-ren-qi-dong" aria-label="Anchor link for: qi-dong-mariadb-bing-tian-jia-mo-ren-qi-dong"><span class="link-icon" aria-hidden="true"></span></a>
+启动 MariaDB 并添加默认启动</h2>
+<pre class="z-code"><code><span class="z-text z-plain">rc-service mariadb start
+</span><span class="z-text z-plain">rc-update add mariadb default
+</span></code></pre>
+<h2 id="gai-root-mi-ma"><a class="header-anchor no-hover-padding" href="#gai-root-mi-ma" aria-label="Anchor link for: gai-root-mi-ma"><span class="link-icon" aria-hidden="true"></span></a>
+改 root 密码</h2>
+<pre class="z-code"><code><span class="z-text z-plain">mysqladmin -u root password &quot;${DB_ROOT_PASS}&quot;
+</span></code></pre>
+<h2 id="chuang-jian-yi-ge-dvwayong-hu-yi-ji-dvwashu-ju-ku"><a class="header-anchor no-hover-padding" href="#chuang-jian-yi-ge-dvwayong-hu-yi-ji-dvwashu-ju-ku" aria-label="Anchor link for: chuang-jian-yi-ge-dvwayong-hu-yi-ji-dvwashu-ju-ku"><span class="link-icon" aria-hidden="true"></span></a>
+创建一个dvwa用户，以及dvwa数据库</h2>
+<p><em>建议添加该用户，不建议使用 MariaDB 的 root 账户登录MariaDB</em></p>
+<pre class="z-code"><code><span class="z-text z-plain">echo &quot;CREATE DATABASE dvwa;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;GRANT ALL ON *.* TO ${DB_USER}@&#39;127.0.0.1&#39; IDENTIFIED BY &#39;${DB_PASS}&#39; WITH GRANT OPTION;&quot; &gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;GRANT ALL ON *.* TO ${DB_USER}@&#39;localhost&#39; IDENTIFIED BY &#39;${DB_PASS}&#39; WITH GRANT OPTION;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;GRANT ALL ON *.* TO ${DB_USER}@&#39;::1&#39; IDENTIFIED BY &#39;${DB_PASS}&#39; WITH GRANT OPTION;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;DELETE FROM mysql.user WHERE User=&#39;&#39;;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;DROP DATABASE test;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">echo &quot;FLUSH PRIVILEGES;&quot; &gt;&gt; /tmp/sql
+</span><span class="z-text z-plain">cat /tmp/sql | mysql -u root --password=&quot;${DB_ROOT_PASS}&quot;
+</span></code></pre>
+<h2 id="zhong-qi-zhu-ji-yan-zheng-shi-fou-an-zhuang-wan-cheng"><a class="header-anchor no-hover-padding" href="#zhong-qi-zhu-ji-yan-zheng-shi-fou-an-zhuang-wan-cheng" aria-label="Anchor link for: zhong-qi-zhu-ji-yan-zheng-shi-fou-an-zhuang-wan-cheng"><span class="link-icon" aria-hidden="true"></span></a>
+重启主机，验证是否安装完成</h2>
+<pre class="z-code"><code><span class="z-text z-plain">reboot
+</span><span class="z-text z-plain">ps -ef | grep mysql
+</span></code></pre>
+<h1 id="an-zhuang-php-yi-ji-suo-xu-yao-de-ku-zu-jian"><a class="header-anchor no-hover-padding" href="#an-zhuang-php-yi-ji-suo-xu-yao-de-ku-zu-jian" aria-label="Anchor link for: an-zhuang-php-yi-ji-suo-xu-yao-de-ku-zu-jian"><span class="link-icon" aria-hidden="true"></span></a>
+安装PHP 以及所需要的库组件</h1>
+<pre class="z-code"><code><span class="z-text z-plain">apk add lighttpd php5-common php5-iconv php5-json php5-gd php5-curl php5-xml php5-pgsql php5-mysql php5-imap php5-cgi fcgi php5-pdo php5-pdo_pgsql  php5-pdo_mysql  php5-soap php5-xmlrpc php5-posix php5-mcrypt php5-gettext php5-ldap php5-ctype php5-dom
+</span></code></pre>
+<h1 id="an-zhuang-pei-zhi-lighttp"><a class="header-anchor no-hover-padding" href="#an-zhuang-pei-zhi-lighttp" aria-label="Anchor link for: an-zhuang-pei-zhi-lighttp"><span class="link-icon" aria-hidden="true"></span></a>
+安装配置 lighttp</h1>
+<pre class="z-code"><code><span class="z-text z-plain">vim /etc/lighttpd/lighttpd.conf
+</span></code></pre>
+<p>取消掉注释<code>include "mod_fastcgi.conf"</code></p>
+<pre class="z-code"><code><span class="z-text z-plain">vim /etc/lighttpd/mod_fastcgi.conf
+</span></code></pre>
+<p>替换<code>/usr/bin/php-cgi</code> 为 <code>/usr/bin/php-cgi5</code></p>
+<p>打开对应的选项，便于漏洞学习</p>
+<pre class="z-code"><code><span class="z-text z-plain">vim /etc/php5/php.ini
+</span></code></pre>
+<p>找到<code>allow_url_open</code> 和 <code>allow_url_include</code> 均设置为 <code>On</code></p>
+<p>启动Lighttpd</p>
+<pre class="z-code"><code><span class="z-text z-plain">rc-service lighttpd start &amp;&amp; rc-update add lighttpd default
+</span></code></pre>
+<h1 id="an-zhuang-pei-zhi-dvwa"><a class="header-anchor no-hover-padding" href="#an-zhuang-pei-zhi-dvwa" aria-label="Anchor link for: an-zhuang-pei-zhi-dvwa"><span class="link-icon" aria-hidden="true"></span></a>
+安装配置 DVWA</h1>
+<h2 id="chuang-jian-xiang-mu-wen-jian-jia"><a class="header-anchor no-hover-padding" href="#chuang-jian-xiang-mu-wen-jian-jia" aria-label="Anchor link for: chuang-jian-xiang-mu-wen-jian-jia"><span class="link-icon" aria-hidden="true"></span></a>
+创建项目文件夹</h2>
+<pre class="z-code"><code><span class="z-text z-plain">mkdir -p /usr/share/webapps/
+</span></code></pre>
+<h2 id="xia-zai-dvwa"><a class="header-anchor no-hover-padding" href="#xia-zai-dvwa" aria-label="Anchor link for: xia-zai-dvwa"><span class="link-icon" aria-hidden="true"></span></a>
+下载DVWA</h2>
+<pre class="z-code"><code><span class="z-text z-plain">cd /usr/share/webapps/
+</span><span class="z-text z-plain">wget https://github.com/RandomStorm/DVWA/archive/v1.9.zip
+</span></code></pre>
+<h2 id="jiang-dvwafang-dao-zhi-ding-de-webxiang-mu-mu-lu-zhong"><a class="header-anchor no-hover-padding" href="#jiang-dvwafang-dao-zhi-ding-de-webxiang-mu-mu-lu-zhong" aria-label="Anchor link for: jiang-dvwafang-dao-zhi-ding-de-webxiang-mu-mu-lu-zhong"><span class="link-icon" aria-hidden="true"></span></a>
+将DVWA放到指定的web项目目录中</h2>
+<pre class="z-code"><code><span class="z-text z-plain">unzip v1.9.zip
+</span><span class="z-text z-plain">rm v1.9.zip
+</span><span class="z-text z-plain">chmod -R 777 /usr/share/webapps/
+</span><span class="z-text z-plain">ln -s /usr/share/webapps/DVWA-1.9/ /var/www/localhost/htdocs/dvwa
+</span></code></pre>
+<h2 id="pei-zhi-dvwa"><a class="header-anchor no-hover-padding" href="#pei-zhi-dvwa" aria-label="Anchor link for: pei-zhi-dvwa"><span class="link-icon" aria-hidden="true"></span></a>
+配置DVWA</h2>
+<pre class="z-code"><code><span class="z-text z-plain">vim /usr/share/webapps/DVWA-1.9/config/config.inc.php
+</span></code></pre>
+<p>设置用户名 密码 以及端口号</p>
+<p><img src="https://user-images.githubusercontent.com/7655877/46000851-53703200-c0dc-11e8-91ad-9afe94ab15fb.png" alt="image" /></p>
+<h2 id="yan-zheng-an-zhuang-qing-kuang"><a class="header-anchor no-hover-padding" href="#yan-zheng-an-zhuang-qing-kuang" aria-label="Anchor link for: yan-zheng-an-zhuang-qing-kuang"><span class="link-icon" aria-hidden="true"></span></a>
+验证安装情况</h2>
+<p>打开<code>http://IP/dvwa/setup.php</code>
+查看 Setup Check  各项应均为绿色</p>
+<p><img src="https://user-images.githubusercontent.com/7655877/46001168-3b4ce280-c0dd-11e8-902d-f4516d0f6439.png" alt="image" /></p>
+<p>点击Create/Reset Database，创建对应的数据库，安装完成</p>
+<h1 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h1>
+<p><a href="https://wiki.alpinelinux.org/wiki/Damn_Vulnerable_Web_Application_(DVWA)">https://wiki.alpinelinux.org/wiki/Damn_Vulnerable_Web_Application_(DVWA)</a>
+<a href="https://wiki.alpinelinux.org/wiki/MariaDB">https://wiki.alpinelinux.org/wiki/MariaDB</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20181016formallanguagegenerality/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">形式语言概述(OverviewOfFromalLanguage)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">在Linux上使用 i3 作为窗口管理器的入门教程(i3-tiling-window-manager)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#bei-jing">背景</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#alpinexi-tong">alpine系统</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#dvwa">DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-alpinexi-tong">安装alpine系统</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-xi-tong-bi-bei-zu-jian">安装系统必备组件</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-bash-vim">安装Bash、Vim</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#kai-qi-yuan-cheng-rootdeng-lu-de-quan-xian-yi-ji-kuo-zhan-de-bao-jing-xiang-yuan">开启远程root登录的权限以及扩展的包镜像源</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#kai-qi-community-testing-edgebao-cang-ku">开启community testing edge包仓库</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-mysql-mariadb">安装配置 MySQL&#x2F;MariaDB</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-mariadb">安装MariaDB</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#pei-zhi-mariadb">配置MariaDB</a>
+                                        
+                                            <ul>
+                                                
+                                                    
+                                                        <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#she-ding-huan-jing-bian-liang-shao-hou-shi-yong">设定环境变量，稍后使用</a>
+                                                            
+                                                        </li>
+                                                    
+                                                
+                                            </ul>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#qi-dong-pei-zhi-mariadb">启动配置MariaDB</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#qi-dong-mariadb-bing-tian-jia-mo-ren-qi-dong">启动 MariaDB 并添加默认启动</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#gai-root-mi-ma">改 root 密码</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#chuang-jian-yi-ge-dvwayong-hu-yi-ji-dvwashu-ju-ku">创建一个dvwa用户，以及dvwa数据库</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#zhong-qi-zhu-ji-yan-zheng-shi-fou-an-zhuang-wan-cheng">重启主机，验证是否安装完成</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-php-yi-ji-suo-xu-yao-de-ku-zu-jian">安装PHP 以及所需要的库组件</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-lighttp">安装配置 lighttp</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#an-zhuang-pei-zhi-dvwa">安装配置 DVWA</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#chuang-jian-xiang-mu-wen-jian-jia">创建项目文件夹</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#xia-zai-dvwa">下载DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#jiang-dvwafang-dao-zhi-ding-de-webxiang-mu-mu-lu-zhong">将DVWA放到指定的web项目目录中</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#pei-zhi-dvwa">配置DVWA</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#yan-zheng-an-zhuang-qing-kuang">验证安装情况</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

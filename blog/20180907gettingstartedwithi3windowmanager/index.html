@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • 在Linux上使用 i3 作为窗口管理器的入门教程(i3-tiling-window-manager)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="在Linux上使用 i3 作为窗口管理器的入门教程(i3-tiling-window-manager)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20180907gettingstartedwithi3windowmanager&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            在Linux上使用 i3 作为窗口管理器的入门教程(i3-tiling-window-manager)
+        </h1>
+
+        <ul class="meta">
+                <li>7th Sep 2018</li><li title="1194 words"><span class='separator' aria-hidden='true'>•</span>6 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/linux-linux/">Linux(Linux)</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#1-an-zhuang">1. 安装</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#2-deng-lu-yu-chu-shi-hua">2. 登录与初始化</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#3-ji-ben-de-kuai-jie-jian">3. 基本的快捷键</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#4-ti-huan-gdm">4. 替换GDM</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><p>注：本文首发于linux中国
+本篇文章会介绍如何在Fedora系统中，安装、配置、使用i3桌面管理器。</p>
+<p><img src="https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/windows-tiling-windows-wall.png?itok=mTH7uVrn" alt="" /></p>
+<p>在我的文章<a href="https://opensource.com/article/18/8/i3-tiling-window-manager">i3 桌面让Linux更好的5个理由</a>，我分享了选择 <a href="https://i3wm.org">i3 桌面管理器</a> 作为一种Linux桌面替代方案的最主要五个理由。
+在本篇文章中，我将向大家展示，如何在 Fedora 28 上安装与配置 i3。</p>
+<h3 id="1-an-zhuang"><a class="header-anchor no-hover-padding" href="#1-an-zhuang" aria-label="Anchor link for: 1-an-zhuang"><span class="link-icon" aria-hidden="true"></span></a>
+1. 安装</h3>
+<p>首先进入 Fedora 系统中，打开一个终端。使用 <code>dnf</code> 来安装需要的软件包，如下：</p>
+<pre class="z-code"><code><span class="z-text z-plain">[ricardo@f28i3 ~]$ sudo dnf install -y i3 i3-ipc i3status i3lock dmenu terminator --exclude=rxvt-unicode
+</span><span class="z-text z-plain">Last metadata expiration check: 1:36:15 ago on Wed 08 Aug 2018 12:04:31 PM EDT.
+</span><span class="z-text z-plain">Dependencies resolved.
+</span><span class="z-text z-plain">================================================================================================
+</span><span class="z-text z-plain"> Package                     Arch         Version                           Repository     Size
+</span><span class="z-text z-plain">================================================================================================
+</span><span class="z-text z-plain">Installing:
+</span><span class="z-text z-plain"> dmenu                       x86_64       4.8-1.fc28                        fedora         33 k
+</span><span class="z-text z-plain"> i3                          x86_64       4.15-1.fc28                       fedora        323 k
+</span><span class="z-text z-plain"> i3-ipc                      noarch       0.1.4-12.fc28                     fedora         14 k
+</span><span class="z-text z-plain"> i3lock                      x86_64       2.9.1-2.fc28                      fedora         33 k
+</span><span class="z-text z-plain"> i3status                    x86_64       2.12-1.fc28                       updates        62 k
+</span><span class="z-text z-plain"> terminator                  noarch       1.91-4.fc28                       fedora        570 k
+</span><span class="z-text z-plain">Installing dependencies:
+</span><span class="z-text z-plain"> dzen2                       x86_64       0.8.5-21.20100104svn.fc28         fedora         60 k
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">... Skipping dependencies/install messages
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Complete!
+</span><span class="z-text z-plain">[ricardo@f28i3 ~]$
+</span></code></pre>
+<p>注意：在这个命令中，我排除了 <code>rxvt-unicode</code> 这个包，因为我更喜欢 <code>terminator</code> 作为我的终端模拟器。</p>
+<p>据用户目前的系统状态，在命令执行过程中可能会安装很多依赖。等待所有的依赖安装完成，之后重启你的电脑。</p>
+<h3 id="2-deng-lu-yu-chu-shi-hua"><a class="header-anchor no-hover-padding" href="#2-deng-lu-yu-chu-shi-hua" aria-label="Anchor link for: 2-deng-lu-yu-chu-shi-hua"><span class="link-icon" aria-hidden="true"></span></a>
+2. 登录与初始化</h3>
+<p>在你的机器重启之后，你便可以第一次体验 i3 了。在 GNOME Display Manager （GDM），选择你的用户名，之后先别着急输密码，点击下方的密码输入框下方的小齿轮，之后选择 i3 ，像下方这样：</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_first_login_small.png" alt="" /></p>
+<p>输入你的密码，并点击 <code>Sign In</code>。在你第一次登入之后，会先看到 i3 的配置界面：</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_first_configuration_small.png" alt="" /></p>
+<p>点击 <code>ENTER</code> 就会在 <code>$HOME/.config/i3</code> 生成一个配置文件，之后你可以通过这个配置文件来定制化 i3's 的一些行为。</p>
+<p>在下一屏，你需要选择你的 <code>Mod</code> 键。这一步很关键，因为 <code>Mod</code> 键通常都会作为 i3's 命令快捷键的发起键。按 <code>ENTER</code> 会选择 <code>Win</code> 键作为默认的 <code>Mod</code> 键。如果你的键盘没有 <code>Win</code> 键，用 <code>Alt</code> 键做替代，用方向键键选择后按 <code>ENTER</code> 确认。</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_generate_config_small.png" alt="" /></p>
+<p>现在你就登录到了 i3 的系统中。由于 i3 是一个最小化的窗口管理器，你会看到一个黑屏窗口，以及屏幕底端显式的状态栏：</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_start_small.png" alt="" /></p>
+<p>接下来，让我们看看 i3 的如何实际使用。</p>
+<h3 id="3-ji-ben-de-kuai-jie-jian"><a class="header-anchor no-hover-padding" href="#3-ji-ben-de-kuai-jie-jian" aria-label="Anchor link for: 3-ji-ben-de-kuai-jie-jian"><span class="link-icon" aria-hidden="true"></span></a>
+3. 基本的快捷键</h3>
+<p>现在你已经登录到了 i3 的会话中，你需要几个基本的快捷键来应对基本的操作。</p>
+<p>大多数的 i3 快捷键都会用到之前配置的 <code>Mod</code> 键。在下面的例子中，当我提到 <code>Mod</code> 键，请根据情况使用你定义的做替换。通常使用 <code>Win</code> 键或者 <code>Alt</code> 键。</p>
+<p>首先，打开一个终端，使用 <code>Mod+ENTER</code>。重复打开几个终端，观察 i3 是如何自动将它们在桌面中排列。默认情况下， i3 会在水平的方向分割屏幕；使用 <code>Mod + v</code> 来垂直分割，再按 <code>Mod + h</code> 会恢复水平分割模式。</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_3terminal_tiled_small.png" alt="" /></p>
+<p>当需要启动其他的应用，按 <code>Mod + d</code> 来打开 <code>dmenu</code>，一个简单的文字应用菜单。默认情况下，<code>dmenu</code> 会呈现出所有在你 <code>$PATH</code> 中设置的应用。使用方向键来选择你想启动的应用，同时你可以键入应用的名称，来缩小选择的范围，之后按 <code>ENTER</code> 来启动选择的应用。</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_dmenu.png" alt="" /></p>
+<p>如果你的应用没有提供退出的方法，你可以使用 i3 来关闭对应的窗口，通过按 <code>Mod + Shift +q</code>。注意，你可能会丢失未保存的工作内容。</p>
+<p>最后，当你想关闭会话并退出 i3，按 <code>Mod + Shift +e</code>。之后会在窗口的上方提示你是否退出。点击 <code>Yes, exit i3</code> 退出，或选择 <code>X</code> 来取消。</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_exit_small.png" alt="" /></p>
+<p>这些就是 i3 中最基本的快捷键，如果想了解更多，请查阅官方文档 <a href="https://i3wm.org/docs/userguide.html#_default_keybindings">documentation</a>。</p>
+<h3 id="4-ti-huan-gdm"><a class="header-anchor no-hover-padding" href="#4-ti-huan-gdm" aria-label="Anchor link for: 4-ti-huan-gdm"><span class="link-icon" aria-hidden="true"></span></a>
+4. 替换GDM</h3>
+<p>使用 i3 window manager 会降低你操作系统的内存占用；然而，Fedora 依然会使用 GDM 作为登录的窗口。GDM 会载入几个与 GNOME 相关的库从而占用内存。</p>
+<p>如果你想进一步的降低你的内存占用，你可以使用一些更轻量级的窗口管理器来替换 GDM，比如 <code>lightdm</code>：</p>
+<pre class="z-code"><code><span class="z-text z-plain">[ricardo@f28i3 ~]$ sudo dnf install -y lightdm
+</span><span class="z-text z-plain">[ricardo@f28i3 ~]$ sudo systemctl disable gdm
+</span><span class="z-text z-plain">Removed /etc/systemd/system/display-manager.service.
+</span><span class="z-text z-plain">[ricardo@f28i3 ~]$ sudo systemctl enable lightdm
+</span><span class="z-text z-plain">Created symlink /etc/systemd/system/display-manager.service -&gt; /usr/lib/systemd/system/lightdm.service.
+</span><span class="z-text z-plain">[ricardo@f28i3 ~]$
+</span></code></pre>
+<p>之后重启你的机器来使用 Lightdm 的登录界面。</p>
+<p>现在你可以继续登录并使用 i3了。</p>
+<p><img src="https://opensource.com/sites/default/files/uploads/i3_lightdm_small.png" alt="" /></p>
+<hr />
+<p>via: https://opensource.com/article/18/8/getting-started-i3-window-manager</p>
+<p>作者：<a href="https://opensource.com/users/rgerardi">Ricardo Gerardi</a>
+选题：<a href="https://github.com/lujun9972">lujun9972</a>
+译者：<a href="https://github.com/littleji">littleji</a>
+校对：<a href="https://github.com/%E6%A0%A1%E5%AF%B9%E8%80%85ID">校对者ID</a></p>
+<p>本文由 <a href="https://github.com/LCTT/TranslateProject">LCTT</a> 原创编译，<a href="https://linux.cn/">Linux中国</a> 荣誉推出</p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20180925installdvwaonalpinefromscratch/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">在alpine上，从零开始安装DVWA(Alpine for DWVA from Scratch)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20180117bitcoin/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">比特币白皮书</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#1-an-zhuang">1. 安装</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#2-deng-lu-yu-chu-shi-hua">2. 登录与初始化</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#3-ji-ben-de-kuai-jie-jian">3. 基本的快捷键</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20180907gettingstartedwithi3windowmanager/#4-ti-huan-gdm">4. 替换GDM</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

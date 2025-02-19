@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • 别忘了使用Mybatis  ResultMap(Don't forget the ResultMap when you use Mybatis)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="别忘了使用Mybatis  ResultMap(Don't forget the ResultMap when you use Mybatis)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20161128don-tforgettheresultmapwhenyouusemybatis&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            别忘了使用Mybatis  ResultMap(Don&#x27;t forget the ResultMap when you use Mybatis)
+        </h1>
+
+        <ul class="meta">
+                <li>28th Nov 2016</li><li title="430 words"><span class='separator' aria-hidden='true'>•</span>3 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/orm/">ORM</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#wen-ti">问题</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-1">解决1</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-2">解决2</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-3">解决3</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#zong-jie">总结</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h2 id="wen-ti"><a class="header-anchor no-hover-padding" href="#wen-ti" aria-label="Anchor link for: wen-ti"><span class="link-icon" aria-hidden="true"></span></a>
+问题</h2>
+<p>最近需要使用Mybatis来操作MySQL,由于入门就随意的拿来一篇入门介绍和官方的教程,照着走一遍,奈何写好了Mapper,Bean,以及配置好数据库,以及对应的xml后会发现无论如何也无法得到实例化后的Bean.事实上,并没有一些bug信息,也没有抛异常.</p>
+<h3 id="jie-jue-1"><a class="header-anchor no-hover-padding" href="#jie-jue-1" aria-label="Anchor link for: jie-jue-1"><span class="link-icon" aria-hidden="true"></span></a>
+解决1</h3>
+<p>判断是否是数据库本身的连接的问题.
+尝试更改mybatis的数据库mysql配置 =&gt; 数据库连接没问题</p>
+<h3 id="jie-jue-2"><a class="header-anchor no-hover-padding" href="#jie-jue-2" aria-label="Anchor link for: jie-jue-2"><span class="link-icon" aria-hidden="true"></span></a>
+解决2</h3>
+<p>判断是否是数据库得命令没有正常执行
+查找mysql的general日志,发现没有,于是查看general的设置使用下面的命令</p>
+<pre class="z-code"><code><span class="z-text z-plain">show variables like &#39;%gener%&#39;;
+</span></code></pre>
+<p>返回下面的信息</p>
+<pre class="z-code"><code><span class="z-text z-plain">+------------------+-------------------------------------------------+
+</span><span class="z-text z-plain">| Variable_name    | Value                                           |
+</span><span class="z-text z-plain">+------------------+-------------------------------------------------+
+</span><span class="z-text z-plain">| general_log      | OFF                                              |
+</span><span class="z-text z-plain">| general_log_file | /tmp/mysql/general.log |
+</span><span class="z-text z-plain">+------------------+-------------------------------------------------+
+</span></code></pre>
+<p>打开general_log</p>
+<pre class="z-code"><code><span class="z-text z-plain">set global general_log=on;
+</span></code></pre>
+<p>如果需要自定义日志的路径,同理设置不再赘述.
+使用<code>tail -F /tmp/mysql/general.log</code> 监控mysql的查询信息
+运行自己得mybatis 测试用例,可以看到上面的命令打印到了控制台,结果如下:</p>
+<pre class="z-code"><code><span class="z-text z-plain">161129 18:01:33       15 Connect    root@192.168.1.188 on test
+</span><span class="z-text z-plain">           15 Query    /* mysql-connector-java-5.1.38 ( Revision: fe541c166cec739c74cc727c5da96c1028b4834a ) */SELECT  @@session.auto_increment_increment AS auto_increment_increment, @@character_set_client AS character_set_client, @@character_set_connection AS character_set_connection, @@character_set_results AS character_set_results, @@character_set_server AS character_set_server, @@init_connect AS init_connect, @@interactive_timeout AS interactive_timeout, @@license AS license, @@lower_case_table_names AS lower_case_table_names, @@max_allowed_packet AS max_allowed_packet, @@net_buffer_length AS net_buffer_length, @@net_write_timeout AS net_write_timeout, @@query_cache_size AS query_cache_size, @@query_cache_type AS query_cache_type, @@sql_mode AS sql_mode, @@system_time_zone AS system_time_zone, @@time_zone AS time_zone, @@tx_isolation AS tx_isolation, @@wait_timeout AS wait_timeout
+</span><span class="z-text z-plain">           15 Query    SELECT @@session.autocommit
+</span><span class="z-text z-plain">           15 Query    SET character_set_results = NULL
+</span><span class="z-text z-plain">           15 Query    SET autocommit=1
+</span><span class="z-text z-plain">           15 Query    SET autocommit=0
+</span><span class="z-text z-plain">           15 Query    SELECT * FROM t_cloud_uba_vm_action WHERE C_ID = 1
+</span><span class="z-text z-plain">           15 Query    SET autocommit=1
+</span></code></pre>
+<p>说明数据库的命令执行也没问题</p>
+<h3 id="jie-jue-3"><a class="header-anchor no-hover-padding" href="#jie-jue-3" aria-label="Anchor link for: jie-jue-3"><span class="link-icon" aria-hidden="true"></span></a>
+解决3</h3>
+<p>回想起,自身项目与参考的项目唯一的不同就是Bean不同,MySQL表不同
+将Bean中的属性名称完全与MySQL一一对应,运行后解决</p>
+<h2 id="zong-jie"><a class="header-anchor no-hover-padding" href="#zong-jie" aria-label="Anchor link for: zong-jie"><span class="link-icon" aria-hidden="true"></span></a>
+总结</h2>
+<p>查看mybatis的Result_Maps文档,发现定义了一个Java Bean后,select语句会精确的匹配JavaBean中的属性,然后映射到结果集.这个就是关键所在,当然可以不完全的对应起来,不过需要 ResultMap来,使用select语句的别名,最终匹配到对应的属性上,如下所示</p>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;select id=&quot;selectUsers&quot; resultType=&quot;User&quot;&gt;
+</span><span class="z-text z-plain">  select
+</span><span class="z-text z-plain">    user_id             as &quot;id&quot;,
+</span><span class="z-text z-plain">    user_name           as &quot;userName&quot;,
+</span><span class="z-text z-plain">    hashed_password     as &quot;hashedPassword&quot;
+</span><span class="z-text z-plain">  from some_table
+</span><span class="z-text z-plain">  where id = #{id}
+</span><span class="z-text z-plain">&lt;/select&gt;
+</span></code></pre>
+<h2 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h2>
+<p><a href="http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html#Result_Maps">http://www.mybatis.org/mybatis-3/zh/sqlmap-xml.html#Result_Maps</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20161130usejavaapiforelasticsearch1/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">使用ElasticSearch的JavaAPI 1(UseJavaApiForElasticSearch 1)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20161128usemultilineplugintodecodeawholejsonfile/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">使用LogStash中的multiline插件来进行json文件解析(use the multiline plugin to decode a whole json file)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#wen-ti">问题</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-1">解决1</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-2">解决2</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#jie-jue-3">解决3</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#zong-jie">总结</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161128don-tforgettheresultmapwhenyouusemybatis/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

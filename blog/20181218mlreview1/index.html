@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • ML梳理之线性回归(linearRegression)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="ML梳理之线性回归(linearRegression)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20181218mlreview1&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            ML梳理之线性回归(linearRegression)
+        </h1>
+
+        <ul class="meta">
+                <li>18th Dec 2018</li><li title="2751 words"><span class='separator' aria-hidden='true'>•</span>14 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/ji-qi-xue-xi-machinelearning/">机器学习(MachineLearning)</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-ji-qi-xue-xi-de-yi-xie-gai-nian">1 机器学习的一些概念</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-1-shen-me-shi-ji-qi-xue-xi">1.1 什么是机器学习?</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-2-shen-me-shi-you-jian-du-yu-wu-jian-du-xue-xi">1.2 什么是有监督与无监督学习？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-3-shen-me-shi-fan-hua-neng-li">1.3 什么是泛化能力？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-4-shen-me-shi-guo-ni-he-yu-qian-ni-he">1.4 什么是过拟合与欠拟合？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-5-guo-ni-he-yu-qian-ni-he-ru-he-jie-jue">1.5 过拟合与欠拟合如何解决？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-6-shen-me-shi-fang-chai-variancehe-pian-chai-bias">1.6 什么是方差Variance和偏差Bias？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-7-jiao-cha-yan-zheng">1.7 交叉验证</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-xian-xing-mo-xing">2 线性模型</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-1-xian-xing-hui-gui-de-yuan-li">2.1 线性回归的原理</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-2-xian-xing-hui-gui-sun-shi-han-shu-dai-jia-han-shu-mu-biao-han-shu">2.2 线性回归损失函数、代价函数、目标函数</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-xian-xing-mo-xing-de-you-hua-fang-fa">3 线性模型的优化方法</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-1-ti-du-xia-jiang-fa">3.1 梯度下降法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-2-sui-ji-ti-du-xia-jiang-fa">3.2 随机梯度下降法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-3-niu-dun-fa">3.3 牛顿法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-4-ni-niu-dun-fa">3.4 拟牛顿法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-5-qi-ta-zi-gua-ying-xue-xi-fang-fa">3.5 其他自适应学习方法</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-xian-xing-hui-gui-de-ping-gu-zhi-biao">4 线性回归的评估指标</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-1cha-zhun-lu-quan-cha-lu-yu-f1">4.1查准率 全查率与F1</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-2-rocyu-auc">4.2 ROC与AUC</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-3-rochui-zhi-guo-cheng">4.3 ROC绘制过程</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#5-sklearncan-shu-xiang-jie">5 sklearn参数详解</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#tao-lun">讨论</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#ru-he-ti-sheng-fan-hua-neng-li">如何提升泛化能力?</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h1 id="1-ji-qi-xue-xi-de-yi-xie-gai-nian"><a class="header-anchor no-hover-padding" href="#1-ji-qi-xue-xi-de-yi-xie-gai-nian" aria-label="Anchor link for: 1-ji-qi-xue-xi-de-yi-xie-gai-nian"><span class="link-icon" aria-hidden="true"></span></a>
+1 机器学习的一些概念</h1>
+<h2 id="1-1-shen-me-shi-ji-qi-xue-xi"><a class="header-anchor no-hover-padding" href="#1-1-shen-me-shi-ji-qi-xue-xi" aria-label="Anchor link for: 1-1-shen-me-shi-ji-qi-xue-xi"><span class="link-icon" aria-hidden="true"></span></a>
+1.1 什么是机器学习?</h2>
+<p>计算机系统能够通过现有的数据，不断地改进其解决某一问题的性能，称为机器学习。</p>
+<h2 id="1-2-shen-me-shi-you-jian-du-yu-wu-jian-du-xue-xi"><a class="header-anchor no-hover-padding" href="#1-2-shen-me-shi-you-jian-du-yu-wu-jian-du-xue-xi" aria-label="Anchor link for: 1-2-shen-me-shi-you-jian-du-yu-wu-jian-du-xue-xi"><span class="link-icon" aria-hidden="true"></span></a>
+1.2 什么是有监督与无监督学习？</h2>
+<p>对于机器学习的过程中，对于所要学习的数据，如果其为标注的数据则称为有监督学习，否则称为无监督学习。</p>
+<h2 id="1-3-shen-me-shi-fan-hua-neng-li"><a class="header-anchor no-hover-padding" href="#1-3-shen-me-shi-fan-hua-neng-li" aria-label="Anchor link for: 1-3-shen-me-shi-fan-hua-neng-li"><span class="link-icon" aria-hidden="true"></span></a>
+1.3 什么是泛化能力？</h2>
+<p>泛化能力指一个经过学习后的模型，能够适应与处理新样本的能力，这也是机器学习的主要目标。</p>
+<h2 id="1-4-shen-me-shi-guo-ni-he-yu-qian-ni-he"><a class="header-anchor no-hover-padding" href="#1-4-shen-me-shi-guo-ni-he-yu-qian-ni-he" aria-label="Anchor link for: 1-4-shen-me-shi-guo-ni-he-yu-qian-ni-he"><span class="link-icon" aria-hidden="true"></span></a>
+1.4 什么是过拟合与欠拟合？</h2>
+<ul>
+<li>过拟合：过拟合指在学习的过程中，模型把样本本身的特点而非目标模型的特点进行了学习，导致整体性能下降的情况。</li>
+<li>欠拟合：欠拟合则是对目标模型的一般性质还没有习得，主要是由于模型本身的学习与表达能力不够。</li>
+</ul>
+<h2 id="1-5-guo-ni-he-yu-qian-ni-he-ru-he-jie-jue"><a class="header-anchor no-hover-padding" href="#1-5-guo-ni-he-yu-qian-ni-he-ru-he-jie-jue" aria-label="Anchor link for: 1-5-guo-ni-he-yu-qian-ni-he-ru-he-jie-jue"><span class="link-icon" aria-hidden="true"></span></a>
+1.5 过拟合与欠拟合如何解决？</h2>
+<ul>
+<li>欠拟合的解决：通过增加模型的学习能力，如：增加学习轮数、增加神经网络的复杂度以提升其表现能力等。</li>
+<li>过拟合的解决：过拟合一般来说是只可缓解无法彻底解决，通过对学习使用的模型进行改进，如 ：减少相应的模型参数、降低神经网络复杂度等。</li>
+</ul>
+<h2 id="1-6-shen-me-shi-fang-chai-variancehe-pian-chai-bias"><a class="header-anchor no-hover-padding" href="#1-6-shen-me-shi-fang-chai-variancehe-pian-chai-bias" aria-label="Anchor link for: 1-6-shen-me-shi-fang-chai-variancehe-pian-chai-bias"><span class="link-icon" aria-hidden="true"></span></a>
+1.6 什么是方差Variance和偏差Bias？</h2>
+<p>方差与偏差是解释学习算法泛化性能的一种重要的工具，下面我们来说明二者的侧重点。
+首先,我们将所得到的训练数据等分成A,B,C3份,再借由这3份训练数据分别得出3个训练模型,那么"方差"指的是向这3个模型输入同样的测试样本,得出的输出结果的方差,借此来判断我们选择的模型对于不同的学习样本展现出的"模型本身训练的稳定性".</p>
+<p>其次,如果我们将上面的所有训练数据进行训练,并输入同样的测试样本,得到对应的输出结果X,将输出结果与真实的结果T进行比较,得到的差值就为偏差, 偏差则侧重于"模型本身预测的精准度"的衡量.</p>
+<p>方差,偏差,噪声三者共同主导了学习模型的误差,在学习初期由于模型的拟合能力不强,这个时候主要是由偏差主导了误差,当学习后期模型的拟合能力增强后,微小的数据扰动都会被模型所捕捉到,此时由方差来主导模型的误差.</p>
+<h2 id="1-7-jiao-cha-yan-zheng"><a class="header-anchor no-hover-padding" href="#1-7-jiao-cha-yan-zheng" aria-label="Anchor link for: 1-7-jiao-cha-yan-zheng"><span class="link-icon" aria-hidden="true"></span></a>
+1.7 交叉验证</h2>
+<p>为了能够具体的衡量模型的性能,交叉验证提供了这样一种性能评测的手段.</p>
+<p>交叉验证的思想是重复的利用数据,把数据进行切分为训练数据集与测试数据集,并在这个基础上进行反复的训练与测试,选取具有较好性能指标的模型.</p>
+<p>具体的思想是,在数据集上划分k个大小相同且互斥的子集,使用k-1个子集进行训练,最后一个进行测试,得出结果后,再选择不同的k-1个自己训练,最后一个进行测试,容易看出上面可最终得到k个模型,通过求取其平均误差得到该模型的测试误差.</p>
+<p>其中典型的k值为10.</p>
+<h1 id="2-xian-xing-mo-xing"><a class="header-anchor no-hover-padding" href="#2-xian-xing-mo-xing" aria-label="Anchor link for: 2-xian-xing-mo-xing"><span class="link-icon" aria-hidden="true"></span></a>
+2 线性模型</h1>
+<h2 id="2-1-xian-xing-hui-gui-de-yuan-li"><a class="header-anchor no-hover-padding" href="#2-1-xian-xing-hui-gui-de-yuan-li" aria-label="Anchor link for: 2-1-xian-xing-hui-gui-de-yuan-li"><span class="link-icon" aria-hidden="true"></span></a>
+2.1 线性回归的原理</h2>
+<ul>
+<li>线性模型:即通过将给定的一些特征进行线性组合所得到的模型.</li>
+<li>线性回归:通过学习得到一个线性的模型能够尽可能准确的预测输入数据的真实标记.</li>
+<li>线性回归的原理:使用了均方误差最小化的方法也就是常说的最小二乘法,即试图找到这么一条直线,使样本到直线上的欧氏距离之和最小.</li>
+</ul>
+<h2 id="2-2-xian-xing-hui-gui-sun-shi-han-shu-dai-jia-han-shu-mu-biao-han-shu"><a class="header-anchor no-hover-padding" href="#2-2-xian-xing-hui-gui-sun-shi-han-shu-dai-jia-han-shu-mu-biao-han-shu" aria-label="Anchor link for: 2-2-xian-xing-hui-gui-sun-shi-han-shu-dai-jia-han-shu-mu-biao-han-shu"><span class="link-icon" aria-hidden="true"></span></a>
+2.2 线性回归损失函数、代价函数、目标函数</h2>
+<ol>
+<li>
+<p>损失函数指的是单一训练集上产生的误差.</p>
+</li>
+<li>
+<p>代价函数则值得是模型在整个训练集上产生的平均误差.</p>
+</li>
+<li>
+<p>设学习后的模型f,面对测试样本X,模型对应的模拟输出f(X)以及X实际的输出Y,拟合的程度.有如下的表示方式
+$$
+L(Y, f(X))=(Y-f(X))^2
+$$</p>
+</li>
+<li>
+<p>但是仅仅通过损失函数来就纠正拟合误差并非我们的目标,我们的是目标是是让模型精确地同时,又尽量的减少模型的复杂度,于是就引入了正则化函数来衡量模型的复杂度,最终我们的目标函数是最小化误差与最小化模型复杂度之和也就是
+$$
+\frac{1}{N} \sum_{i=1}^{N}L(y_i,f(x_i))+\lambda J(f)
+$$
+前者是最小化经验风险,后者则是最小化结构风险</p>
+</li>
+</ol>
+<h1 id="3-xian-xing-mo-xing-de-you-hua-fang-fa"><a class="header-anchor no-hover-padding" href="#3-xian-xing-mo-xing-de-you-hua-fang-fa" aria-label="Anchor link for: 3-xian-xing-mo-xing-de-you-hua-fang-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3 线性模型的优化方法</h1>
+<p>当我们得到了对应目标函数后,那么就需要具体的对该模型各个参数求最优解,也就是常见的最优化问题,这里有以下这么几个主要的算法.</p>
+<h2 id="3-1-ti-du-xia-jiang-fa"><a class="header-anchor no-hover-padding" href="#3-1-ti-du-xia-jiang-fa" aria-label="Anchor link for: 3-1-ti-du-xia-jiang-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3.1 梯度下降法</h2>
+<p>梯度下降法的优化思想是用当前位置负梯度方向作为搜索方向，因为该方向为当前位置的最快下降方向.</p>
+<h2 id="3-2-sui-ji-ti-du-xia-jiang-fa"><a class="header-anchor no-hover-padding" href="#3-2-sui-ji-ti-du-xia-jiang-fa" aria-label="Anchor link for: 3-2-sui-ji-ti-du-xia-jiang-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3.2 随机梯度下降法</h2>
+<p>由于梯度下降法使用了固定步长的,这样带来了后期收敛慢,其进入极小点的情况,这里通过选用随机梯度的下降,更容易突破局部极小点,从而收敛至全局极值点,不过也有迭代次数增加等缺点.</p>
+<h2 id="3-3-niu-dun-fa"><a class="header-anchor no-hover-padding" href="#3-3-niu-dun-fa" aria-label="Anchor link for: 3-3-niu-dun-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3.3 牛顿法</h2>
+<p>牛顿法不同于梯度向量,而是使用了二阶海森矩阵的逆矩阵来求解,相对来说比普通的梯度下降算法收敛速度更快,但是其要求必须具有二阶海森矩阵的逆矩阵条件,其计算非常复杂,该条件在大规模数据下往往无法保证.</p>
+<h2 id="3-4-ni-niu-dun-fa"><a class="header-anchor no-hover-padding" href="#3-4-ni-niu-dun-fa" aria-label="Anchor link for: 3-4-ni-niu-dun-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3.4 拟牛顿法</h2>
+<p>拟牛顿法则是通过找到一个与海森矩阵类似性质的矩阵来替代,从而让计算更为容易.
+其中DFP BFGS L-BFGS都是比较重要的拟牛顿方法.</p>
+<h2 id="3-5-qi-ta-zi-gua-ying-xue-xi-fang-fa"><a class="header-anchor no-hover-padding" href="#3-5-qi-ta-zi-gua-ying-xue-xi-fang-fa" aria-label="Anchor link for: 3-5-qi-ta-zi-gua-ying-xue-xi-fang-fa"><span class="link-icon" aria-hidden="true"></span></a>
+3.5 其他自适应学习方法</h2>
+<p>adagrad,adadelta,rmsprop,adam等一系列adaptive learning rate方法</p>
+<h1 id="4-xian-xing-hui-gui-de-ping-gu-zhi-biao"><a class="header-anchor no-hover-padding" href="#4-xian-xing-hui-gui-de-ping-gu-zhi-biao" aria-label="Anchor link for: 4-xian-xing-hui-gui-de-ping-gu-zhi-biao"><span class="link-icon" aria-hidden="true"></span></a>
+4 线性回归的评估指标</h1>
+<h2 id="4-1cha-zhun-lu-quan-cha-lu-yu-f1"><a class="header-anchor no-hover-padding" href="#4-1cha-zhun-lu-quan-cha-lu-yu-f1" aria-label="Anchor link for: 4-1cha-zhun-lu-quan-cha-lu-yu-f1"><span class="link-icon" aria-hidden="true"></span></a>
+4.1查准率 全查率与F1</h2>
+<p>二分类问题有四种预测的情况:
+真正例:true positive
+假正例:false positive
+真反例:true negative
+假反例:false negative
+查准率P与全查率R为
+$$
+P=\frac{TP}{TP+FP}
+$$
+$$
+R=\frac{TP}{TP+FN}
+$$
+二者一般矛盾,因为查全率高意味着查的个数多,这样又会导致查准率下降
+由查全率作为横轴,查准率作为纵轴形成P-R曲线,比较学习期的的性能时,比较该曲线的面积是一个方法
+平衡点(Break-Event Point)是查准率等于查全率的取值,这样可以权衡查全率和查准率
+BEP还是有些简化,更常用的是F1度量,目的是为了找出更好的学习器
+F1:基于查准率和查全率的调和平均值(harmonic mean):
+$$
+F1=\frac{2<em>P</em>R}{P+R}=\frac{2<em>TP}{样例总数+TP-TN}
+$$
+$$
+F_\beta=\frac{(1+\beta^{2})<em>P</em>R}{\beta^2</em>P +R}
+$$
+其中β&gt;0, β=1时就退化为标准的F1,β&lt;1时则查准更重要,β&gt;1则查全更重要
+很多时候我们有多个二分类混淆矩阵,例如进行多次训练和测试,每次都有一个,或者执行多分类任务,每每两个组合都对应一个混淆矩阵
+一种直接的做法是在所有的混淆矩阵都计算,然后计算所有的平均值也就是宏查重率macro-P和macro-R以及对应的macro F1</p>
+<h2 id="4-2-rocyu-auc"><a class="header-anchor no-hover-padding" href="#4-2-rocyu-auc" aria-label="Anchor link for: 4-2-rocyu-auc"><span class="link-icon" aria-hidden="true"></span></a>
+4.2 ROC与AUC</h2>
+<p>学习预测就是将样本进行排序,最可能是正例的排在前面
+神经网络一般情形下对每个测试样本预测出一个0-1的实值,然后将这个值作为截断点,大于这个截断点的样本为正例,其他的为反例,如果更重视查准率则可选择排序中靠前的位置,重视查全率则选择较后的截断点
+排序本身的质量好环则是体现了学习器在不同任务下的期望泛化性能,ROC曲线就是从这个角度来研究学习器泛化性能</p>
+<p>ROC(Receiver Operating Characteristic)的操作方式与之前的P-R图类似,并提出了两个概念,真正利率TPR,假正利率FPR
+$$
+TPR=TP/(TP+FN)
+$$
+$$
+FPR=FP/(FP+TN)
+$$</p>
+<h2 id="4-3-rochui-zhi-guo-cheng"><a class="header-anchor no-hover-padding" href="#4-3-rochui-zhi-guo-cheng" aria-label="Anchor link for: 4-3-rochui-zhi-guo-cheng"><span class="link-icon" aria-hidden="true"></span></a>
+4.3 ROC绘制过程</h2>
+<p>设正例数目为m+ 反例数目为m-</p>
+<ol>
+<li>均是先对所有的样例根据学习器的结果进行排序,然后将分类的阀值设置为最大,这时候均是反例,TPR=FPR=0
+2.调整阀值为依次每个样例的值,然后观察次样本是否为真正例,如果是坐标为(x,y+1/m+),如果不是坐标为(x+1/m-,y)</li>
+<li>比较ROC曲线的面积也就是AUC</li>
+</ol>
+<p>AUC更考虑的是样本预测的排序质量</p>
+<h1 id="5-sklearncan-shu-xiang-jie"><a class="header-anchor no-hover-padding" href="#5-sklearncan-shu-xiang-jie" aria-label="Anchor link for: 5-sklearncan-shu-xiang-jie"><span class="link-icon" aria-hidden="true"></span></a>
+5 sklearn参数详解</h1>
+<p>下面对于一个最普通的sklearn 线性模型的使用方式进行说明</p>
+<pre class="z-code"><code><span class="z-text z-plain"># 创建一个普通的线性模型
+</span><span class="z-text z-plain">regr = linear_model.LinearRegression()
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># 输入对应的训练数据x,以及对应的标签数据y
+</span><span class="z-text z-plain">regr.fit(datasets_train_x, datasets_train_y)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># 输入对对应的测试数据x,得出模型的预测输出
+</span><span class="z-text z-plain">pred_y = regr.predict(datasets_test_x)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># 最终使用下面的命令轲输出对应的w 与 b
+</span><span class="z-text z-plain">reg.coef_
+</span></code></pre>
+<p>除了上面的模型还有包括 lasso ridge等回归模型在<code>linear_model</code>包内</p>
+<h1 id="tao-lun"><a class="header-anchor no-hover-padding" href="#tao-lun" aria-label="Anchor link for: tao-lun"><span class="link-icon" aria-hidden="true"></span></a>
+讨论</h1>
+<h2 id="ru-he-ti-sheng-fan-hua-neng-li"><a class="header-anchor no-hover-padding" href="#ru-he-ti-sheng-fan-hua-neng-li" aria-label="Anchor link for: ru-he-ti-sheng-fan-hua-neng-li"><span class="link-icon" aria-hidden="true"></span></a>
+如何提升泛化能力?</h2>
+<h1 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h1>
+<p><a href="https://scikit-learn.org/stable/modules/linear_model.html">scikit-learn 0.20 document</a>
+<a href="https://docs.microsoft.com/en-us/azure/machine-learning/studio-module-reference/linear-regression">azure machine-learning-reference</a>
+<a href="https://www.deeplearningbook.org/">deeplearning</a>
+<a href="https://www.amazon.cn/dp/B01ARKEV1G/ref=sr_1_1?ie=UTF8&amp;qid=1545063695&amp;sr=8-1&amp;keywords=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0+%E5%91%A8%E5%BF%97%E5%8D%8E">机器学习-周志华</a>
+<a href="https://www.amazon.cn/dp/B007TSFMTA/ref=pd_sbs_14_3?_encoding=UTF8&amp;pd_rd_i=B007TSFMTA&amp;pd_rd_r=d8a70aa5-0217-11e9-a072-e9dfeb7db3a3&amp;pd_rd_w=PIcAR&amp;pd_rd_wg=9xBdB&amp;pf_rd_p=2d9f2e80-85a0-476d-89d7-9e61ddceb885&amp;pf_rd_r=WPZZ4JN9QDGJN49CCH7G&amp;psc=1&amp;refRID=WPZZ4JN9QDGJN49CCH7G">统计学习方法-李航</a>
+[机器学习中的Bias(偏差,Error(误差)和Variance(方差))有什么区别与联系]((https://www.zhihu.com/question/27068705)
+<a href="http://oath2yangmen.online/2018/01/29/%E7%90%86%E8%A7%A3%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E4%B8%AD%E5%B8%B8%E7%94%A8%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95/">理解机器学习中常用优化方法</a>
+<a href="https://www.zhihu.com/question/52398145/answer/209358209">机器学习中的目标函数\损失函数\代价函数</a>
+<a href="https://www.zhihu.com/question/46441403">梯度下降or拟牛顿法?</a>
+<a href="https://zhuanlan.zhihu.com/p/37524275">梯度下降法\牛顿法和拟牛顿法</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20181222mlreview2/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">ML梳理之线性回归(LogisticRegression)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20181127generativevsdiscriminative/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">生成模型VS判别模型(Gnerative VS Discriminative)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-ji-qi-xue-xi-de-yi-xie-gai-nian">1 机器学习的一些概念</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-1-shen-me-shi-ji-qi-xue-xi">1.1 什么是机器学习?</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-2-shen-me-shi-you-jian-du-yu-wu-jian-du-xue-xi">1.2 什么是有监督与无监督学习？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-3-shen-me-shi-fan-hua-neng-li">1.3 什么是泛化能力？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-4-shen-me-shi-guo-ni-he-yu-qian-ni-he">1.4 什么是过拟合与欠拟合？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-5-guo-ni-he-yu-qian-ni-he-ru-he-jie-jue">1.5 过拟合与欠拟合如何解决？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-6-shen-me-shi-fang-chai-variancehe-pian-chai-bias">1.6 什么是方差Variance和偏差Bias？</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#1-7-jiao-cha-yan-zheng">1.7 交叉验证</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-xian-xing-mo-xing">2 线性模型</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-1-xian-xing-hui-gui-de-yuan-li">2.1 线性回归的原理</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#2-2-xian-xing-hui-gui-sun-shi-han-shu-dai-jia-han-shu-mu-biao-han-shu">2.2 线性回归损失函数、代价函数、目标函数</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-xian-xing-mo-xing-de-you-hua-fang-fa">3 线性模型的优化方法</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-1-ti-du-xia-jiang-fa">3.1 梯度下降法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-2-sui-ji-ti-du-xia-jiang-fa">3.2 随机梯度下降法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-3-niu-dun-fa">3.3 牛顿法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-4-ni-niu-dun-fa">3.4 拟牛顿法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#3-5-qi-ta-zi-gua-ying-xue-xi-fang-fa">3.5 其他自适应学习方法</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-xian-xing-hui-gui-de-ping-gu-zhi-biao">4 线性回归的评估指标</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-1cha-zhun-lu-quan-cha-lu-yu-f1">4.1查准率 全查率与F1</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-2-rocyu-auc">4.2 ROC与AUC</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#4-3-rochui-zhi-guo-cheng">4.3 ROC绘制过程</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#5-sklearncan-shu-xiang-jie">5 sklearn参数详解</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#tao-lun">讨论</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#ru-he-ti-sheng-fan-hua-neng-li">如何提升泛化能力?</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181218mlreview1/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

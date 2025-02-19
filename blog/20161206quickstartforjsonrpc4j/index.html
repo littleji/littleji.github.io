@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • jsonrpc4j初步使用(Quick Start For Jsonrpc4j)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="jsonrpc4j初步使用(Quick Start For Jsonrpc4j)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20161206quickstartforjsonrpc4j&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            jsonrpc4j初步使用(Quick Start For Jsonrpc4j)
+        </h1>
+
+        <ul class="meta">
+                <li>6th Dec 2016</li><li title="474 words"><span class='separator' aria-hidden='true'>•</span>3 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/rpc/">Rpc</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#gai-shu">概述</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#maven">Maven</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#pei-zhi-ce-shi-yong-de-model-service">配置测试用的model,service</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#model">model</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#servicehe-qi-implement">Service和其Implement</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#pei-zhi-serverduan">配置server端</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#servletde-web-xml">Servlet的web.xml</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#ce-shi-lei">测试类</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#streaming-server-and-client">Streaming server and client</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#without-the-spring-framework">Without the Spring Framework</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#dui-ce-shi-de-jie-shi">对测试的解释</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h2 id="gai-shu"><a class="header-anchor no-hover-padding" href="#gai-shu" aria-label="Anchor link for: gai-shu"><span class="link-icon" aria-hidden="true"></span></a>
+概述</h2>
+<p>目前有个项目需要向外提供服务:</p>
+<ol>
+<li>不打算用spring相对来说比较重的框架</li>
+<li>后来考虑过jersey+jetty的restful框架,但是restful本身的应用场景,或者说是抽象较为局限,主要是编者水平有限</li>
+<li>再之后又看了thrift的使用,稍微上手,认为操作还是较为繁杂.</li>
+<li>json-rpc以前并没有接触过,json相对来说又有传输占用带宽较小等广为人知的优点,便以此篇为个契机学习一下.
+jsonrpc4j是briandilley开发,项目的地址是<a href="https://github.com/briandilley/jsonrpc4j">github</a>
+jsonrpc4j 服从json-rpc的规范,<a href="http://www.jsonrpc.org/">规范链接在此</a>
+其主要支持下面这4类客户端:
+Streaming server (InputStream \ OutputStream)
+HTTP Server (HttpServletRequest \ HttpServletResponse)
+Portlet Server (ResourceRequest \ ResourceResponse)
+Socket Server (StreamServer)
+这次主要使用的是HTTP Server</li>
+</ol>
+<h2 id="maven"><a class="header-anchor no-hover-padding" href="#maven" aria-label="Anchor link for: maven"><span class="link-icon" aria-hidden="true"></span></a>
+Maven</h2>
+<p>jsonrpc项目通过Maven构建,首先需要在pom.xm中加入对jsonrpc4j的依赖,如下面所示:</p>
+<pre class="z-code"><code><span class="z-text z-plain">    &lt;!-- jsonrpc4j --&gt;
+</span><span class="z-text z-plain">    &lt;dependency&gt;
+</span><span class="z-text z-plain">        &lt;groupId&gt;com.github.briandilley.jsonrpc4j&lt;/groupId&gt;
+</span><span class="z-text z-plain">        &lt;artifactId&gt;jsonrpc4j&lt;/artifactId&gt;
+</span><span class="z-text z-plain">        &lt;version&gt;1.4.6&lt;/version&gt;
+</span><span class="z-text z-plain">    &lt;/dependency&gt;
+</span></code></pre>
+<p>但是仅仅加入上面的依赖还不够,完整的pom.xml如下所示:</p>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+</span><span class="z-text z-plain">&lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot;
+</span><span class="z-text z-plain">         xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+</span><span class="z-text z-plain">         xsi:schemaLocation=&quot;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;&gt;
+</span><span class="z-text z-plain">    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    &lt;groupId&gt;com.littleji&lt;/groupId&gt;
+</span><span class="z-text z-plain">    &lt;artifactId&gt;jsonrpc-demo&lt;/artifactId&gt;
+</span><span class="z-text z-plain">    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+</span><span class="z-text z-plain">    &lt;dependencies&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;com.github.briandilley.jsonrpc4j&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;jsonrpc4j&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;1.4.6&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;jackson-core&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.7.2&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.7.2&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;jackson-annotations&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.7.2&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind --&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.7.2&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;1.7.9&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        &lt;!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api --&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;javax.servlet&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;javax.servlet-api&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;3.1.0&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;org.apache.httpcomponents&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;httpcore-nio&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;4.4.4&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;commons-codec&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;commons-codec&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;1.10&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;!-- https://mvnrepository.com/artifact/javax.portlet/portlet-api --&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;javax.portlet&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;portlet-api&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.0&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">        &lt;dependency&gt;
+</span><span class="z-text z-plain">            &lt;groupId&gt;net.iharder&lt;/groupId&gt;
+</span><span class="z-text z-plain">            &lt;artifactId&gt;base64&lt;/artifactId&gt;
+</span><span class="z-text z-plain">            &lt;version&gt;2.3.9&lt;/version&gt;
+</span><span class="z-text z-plain">        &lt;/dependency&gt;
+</span><span class="z-text z-plain">    &lt;/dependencies&gt;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">&lt;/project&gt;
+</span></code></pre>
+<h2 id="pei-zhi-ce-shi-yong-de-model-service"><a class="header-anchor no-hover-padding" href="#pei-zhi-ce-shi-yong-de-model-service" aria-label="Anchor link for: pei-zhi-ce-shi-yong-de-model-service"><span class="link-icon" aria-hidden="true"></span></a>
+配置测试用的model,service</h2>
+<h3 id="model"><a class="header-anchor no-hover-padding" href="#model" aria-label="Anchor link for: model"><span class="link-icon" aria-hidden="true"></span></a>
+model</h3>
+<pre class="z-code"><code><span class="z-text z-plain">package com.littleji.jsonrpc.demo;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">import java.io.Serializable;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">public class DemoBean implements Serializable{
+</span><span class="z-text z-plain">    private static final long serialVersionUID = -5141784935371524L;
+</span><span class="z-text z-plain">    private int code;
+</span><span class="z-text z-plain">    private String msg;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public int getCode() {
+</span><span class="z-text z-plain">        return code;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public void setCode(int code) {
+</span><span class="z-text z-plain">        this.code = code;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public String getMsg() {
+</span><span class="z-text z-plain">        return msg;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public void setMsg(String msg) {
+</span><span class="z-text z-plain">        this.msg = msg;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<h3 id="servicehe-qi-implement"><a class="header-anchor no-hover-padding" href="#servicehe-qi-implement" aria-label="Anchor link for: servicehe-qi-implement"><span class="link-icon" aria-hidden="true"></span></a>
+Service和其Implement</h3>
+<pre class="z-code"><code><span class="z-text z-plain">package com.littleji.jsonrpc.demo;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">/**
+</span><span class="z-text z-plain">* Created by Jimmy on 2016/12/6.
+</span><span class="z-text z-plain">*/
+</span><span class="z-text z-plain">public interface DemoService {
+</span><span class="z-text z-plain">        public DemoBean getDemo(String code, String msg);
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        public Integer getInt(Integer code);
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        public String getString(String msg);
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        public void doSomething();
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">public class DemoServiceImply implements DemoService {
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public DemoBean getDemo(String code, String msg) {
+</span><span class="z-text z-plain">        DemoBean bean1 = new DemoBean();
+</span><span class="z-text z-plain">        bean1.setCode(Integer.parseInt(code));
+</span><span class="z-text z-plain">        bean1.setMsg(msg);
+</span><span class="z-text z-plain">        return bean1;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public Integer getInt(Integer code) {
+</span><span class="z-text z-plain">        return code;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public String getString(String msg) {
+</span><span class="z-text z-plain">        return &quot;{&quot;+msg+&quot;}&quot;;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    public void doSomething() {
+</span><span class="z-text z-plain">        System.out.println(&quot;do something&quot;);
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<h2 id="pei-zhi-serverduan"><a class="header-anchor no-hover-padding" href="#pei-zhi-serverduan" aria-label="Anchor link for: pei-zhi-serverduan"><span class="link-icon" aria-hidden="true"></span></a>
+配置server端</h2>
+<pre class="z-code"><code><span class="z-text z-plain">package com.littleji.jsonrpc.demo;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">/**
+</span><span class="z-text z-plain">* Created by Jimmy on 2016/12/6.
+</span><span class="z-text z-plain">*/
+</span><span class="z-text z-plain">import java.io.IOException;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">import javax.servlet.ServletConfig;
+</span><span class="z-text z-plain">import javax.servlet.ServletException;
+</span><span class="z-text z-plain">import javax.servlet.http.HttpServlet;
+</span><span class="z-text z-plain">import javax.servlet.http.HttpServletRequest;
+</span><span class="z-text z-plain">import javax.servlet.http.HttpServletResponse;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">import com.googlecode.jsonrpc4j.JsonRpcServer;
+</span><span class="z-text z-plain">import com.googlecode.jsonrpc4j.ProxyUtil;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">public class RpcServer extends HttpServlet {
+</span><span class="z-text z-plain">    private static final long serialVersionUID = 12341234345L;
+</span><span class="z-text z-plain">    private JsonRpcServer rpcServer = null;
+</span><span class="z-text z-plain">    private DemoService demoService = null;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    @Override
+</span><span class="z-text z-plain">    public void init(ServletConfig config) throws ServletException {
+</span><span class="z-text z-plain">        super.init(config);
+</span><span class="z-text z-plain">        demoService = new DemoServiceImply();
+</span><span class="z-text z-plain">        Object compositeService = ProxyUtil.createCompositeServiceProxy(
+</span><span class="z-text z-plain">                this.getClass().getClassLoader(),
+</span><span class="z-text z-plain">                new Object[] { demoService},
+</span><span class="z-text z-plain">                new Class&lt;?&gt;[] { DemoService.class},
+</span><span class="z-text z-plain">                true);
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        rpcServer = new JsonRpcServer(compositeService);
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">    @Override
+</span><span class="z-text z-plain">    protected void service(HttpServletRequest request,
+</span><span class="z-text z-plain">                           HttpServletResponse response) throws ServletException, IOException {
+</span><span class="z-text z-plain">        rpcServer.handle(request, response);
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<h2 id="servletde-web-xml"><a class="header-anchor no-hover-padding" href="#servletde-web-xml" aria-label="Anchor link for: servletde-web-xml"><span class="link-icon" aria-hidden="true"></span></a>
+Servlet的web.xml</h2>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;!DOCTYPE web-app PUBLIC
+</span><span class="z-text z-plain">&quot;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&quot;
+</span><span class="z-text z-plain">&quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot; &gt;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">&lt;web-app&gt;
+</span><span class="z-text z-plain">  &lt;display-name&gt;Archetype Created Web Application&lt;/display-name&gt;
+</span><span class="z-text z-plain">  &lt;servlet&gt;
+</span><span class="z-text z-plain">      &lt;servlet-name&gt;RpcServer&lt;/servlet-name&gt;
+</span><span class="z-text z-plain">      &lt;display-name&gt;RpcServer&lt;/display-name&gt;
+</span><span class="z-text z-plain">      &lt;description&gt;&lt;/description&gt;
+</span><span class="z-text z-plain">      &lt;servlet-class&gt;com.littleji.jsonrpc.demo.RpcServer&lt;/servlet-class&gt;
+</span><span class="z-text z-plain">  &lt;/servlet&gt;
+</span><span class="z-text z-plain">  &lt;servlet-mapping&gt;
+</span><span class="z-text z-plain">      &lt;servlet-name&gt;RpcServer&lt;/servlet-name&gt;
+</span><span class="z-text z-plain">      &lt;url-pattern&gt;/rpc&lt;/url-pattern&gt;
+</span><span class="z-text z-plain">  &lt;/servlet-mapping&gt;
+</span><span class="z-text z-plain">&lt;/web-app&gt;
+</span></code></pre>
+<h2 id="ce-shi-lei"><a class="header-anchor no-hover-padding" href="#ce-shi-lei" aria-label="Anchor link for: ce-shi-lei"><span class="link-icon" aria-hidden="true"></span></a>
+测试类</h2>
+<pre class="z-code"><code><span class="z-text z-plain">package com.littleji.jsonrpc.test;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">import com.googlecode.jsonrpc4j.JsonRpcHttpClient;
+</span><span class="z-text z-plain">import com.googlecode.jsonrpc4j.ProxyUtil;
+</span><span class="z-text z-plain">import com.littleji.jsonrpc.demo.DemoService;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">import java.net.URL;
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">/**
+</span><span class="z-text z-plain">* Created by Jimmy on 2016/12/7.
+</span><span class="z-text z-plain">*/
+</span><span class="z-text z-plain">public class jsonrpctest2 {
+</span><span class="z-text z-plain">    public static void main(String [] args) throws Throwable {
+</span><span class="z-text z-plain">        try {
+</span><span class="z-text z-plain">            JsonRpcHttpClient client = new JsonRpcHttpClient(
+</span><span class="z-text z-plain">                    new URL(&quot;http://127.0.0.1:8080/rpc&quot;));
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">            DemoService userService = ProxyUtil.createClientProxy(
+</span><span class="z-text z-plain">                    client.getClass().getClassLoader(),
+</span><span class="z-text z-plain">                    DemoService.class,
+</span><span class="z-text z-plain">                    client);
+</span><span class="z-text z-plain">             //两种调用方式
+</span><span class="z-text z-plain">            System.out.println(userService.getString(&quot;aa&quot;));
+</span><span class="z-text z-plain">            System.out.println( client.invoke(&quot;getString&quot;, new String[] { &quot;haha&quot; }, String.class));
+</span><span class="z-text z-plain">            System.out.println( client.invoke(&quot;getInt&quot;, new Integer[] { 2 }, Integer.class));
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">        }
+</span><span class="z-text z-plain">        catch (Exception e) {
+</span><span class="z-text z-plain">            e.printStackTrace();
+</span><span class="z-text z-plain">        }
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<h2 id="streaming-server-and-client"><a class="header-anchor no-hover-padding" href="#streaming-server-and-client" aria-label="Anchor link for: streaming-server-and-client"><span class="link-icon" aria-hidden="true"></span></a>
+Streaming server and client</h2>
+<p>jsonrpc4j 主要是通过流服务器和客户端来处理应用(不仅仅是HTTP)的请求,而<code>JsonRpcClient</code>和<code>JsonRpcServer</code>有一些简单的方法来获得输入和输出流,且在库中附带着一个JsonRpcHttpClient,用来扩展JsonRpcClient对于HTTP的支持</p>
+<h2 id="without-the-spring-framework"><a class="header-anchor no-hover-padding" href="#without-the-spring-framework" aria-label="Anchor link for: without-the-spring-framework"><span class="link-icon" aria-hidden="true"></span></a>
+Without the Spring Framework</h2>
+<p>jsonrpc4j可以不使用spring框架,事实上二者均可运行于Android环境中</p>
+<h2 id="dui-ce-shi-de-jie-shi"><a class="header-anchor no-hover-padding" href="#dui-ce-shi-de-jie-shi" aria-label="Anchor link for: dui-ce-shi-de-jie-shi"><span class="link-icon" aria-hidden="true"></span></a>
+对测试的解释</h2>
+<p>其实测试类就是一个客户端的简单使用
+下面是一个客户端使用JSON-RPC服务的例子,具体如下:</p>
+<pre class="z-code"><code><span class="z-text z-plain">JsonRpcHttpClient client = new JsonRpcHttpClient(
+</span><span class="z-text z-plain">    new URL(&quot;http://example.com/UserService.json&quot;));
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">User user = client.invoke(&quot;createUser&quot;, new Object[] { &quot;bob&quot;, &quot;the builder&quot; }, User.class);
+</span></code></pre>
+<p>或者使用ProxyUtil类结合接口,来创建一个动态的代理,如下所示:</p>
+<pre class="z-code"><code><span class="z-text z-plain">JsonRpcHttpClient client = new JsonRpcHttpClient(
+</span><span class="z-text z-plain">    new URL(&quot;http://example.com/UserService.json&quot;));
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">UserService userService = ProxyUtil.createClientProxy(
+</span><span class="z-text z-plain">    getClass().getClassLoader(),
+</span><span class="z-text z-plain">    UserService.class,
+</span><span class="z-text z-plain">    client);
+</span><span class="z-text z-plain"> 
+</span><span class="z-text z-plain">User user = userService.createUser(&quot;bob&quot;, &quot;the builder&quot;);
+</span></code></pre>
+<h2 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h2>
+<p><a href="https://github.com/briandilley/jsonrpc4j">jsonrpc4j</a>
+<a href="http://blog.csdn.net/hjcenry/article/details/52440925">JSON-RPC（jsonrpc4j）使用demo</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">json-rpc的标准调用(UseJsonRPCFormatToGetWhatYouWant)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20161201usejavaapiforelasticsearch2/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">使用ElasticSearch的JavaAPI2(UseJavaApiForElasticSearch2)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#gai-shu">概述</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#maven">Maven</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#pei-zhi-ce-shi-yong-de-model-service">配置测试用的model,service</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#model">model</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#servicehe-qi-implement">Service和其Implement</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#pei-zhi-serverduan">配置server端</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#servletde-web-xml">Servlet的web.xml</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#ce-shi-lei">测试类</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#streaming-server-and-client">Streaming server and client</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#without-the-spring-framework">Without the Spring Framework</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#dui-ce-shi-de-jie-shi">对测试的解释</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

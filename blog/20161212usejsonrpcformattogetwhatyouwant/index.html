@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • json-rpc的标准调用(UseJsonRPCFormatToGetWhatYouWant)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="json-rpc的标准调用(UseJsonRPCFormatToGetWhatYouWant)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20161212usejsonrpcformattogetwhatyouwant&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            json-rpc的标准调用(UseJsonRPCFormatToGetWhatYouWant)
+        </h1>
+
+        <ul class="meta">
+                <li>12th Dec 2016</li><li title="671 words"><span class='separator' aria-hidden='true'>•</span>4 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/rpc/">Rpc</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#gai-shu">概述</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#json-rpcde-biao-zhun-xiang-xi-shuo-ming">json-rpc的标准详细说明</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#rpcqing-qiu-suo-bi-yao-de-can-shu">rpc请求所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#rpcxiang-ying-suo-bi-yao-de-can-shu">rpc响应所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#cuo-wu-dui-xiang-suo-bi-yao-de-can-shu">错误对象所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#shi-yong-curllai-ce-shi-yi-jing-jian-li-de-json-rpcfu-wu">使用curl来测试已经建立的json-rpc服务</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#ce-shi-dan-ge-qing-qiu">测试单个请求</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#ce-shi-pi-de-fang-shi-fa-song-qing-qiu">测试批的方式发送请求</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h2 id="gai-shu"><a class="header-anchor no-hover-padding" href="#gai-shu" aria-label="Anchor link for: gai-shu"><span class="link-icon" aria-hidden="true"></span></a>
+概述</h2>
+<p>本文承接上文的<a href="http://littleji.com/2016/12/06/QuickStartForJsonrpc4j/">jsonrpc4j初步使用</a>,在知道了如何部署Server端以及通过Java的接口调用部署的服务后,下面就是通过json-rpc本身的标准来实际的调用rpc借口和处理返回的相关信息.</p>
+<h2 id="json-rpcde-biao-zhun-xiang-xi-shuo-ming"><a class="header-anchor no-hover-padding" href="#json-rpcde-biao-zhun-xiang-xi-shuo-ming" aria-label="Anchor link for: json-rpcde-biao-zhun-xiang-xi-shuo-ming"><span class="link-icon" aria-hidden="true"></span></a>
+json-rpc的标准详细说明</h2>
+<p>这方面具体请参考:</p>
+<ol>
+<li><a href="http://wiki.geekdream.com/Specification/json-rpc_2.0.html">中文</a></li>
+<li><a href="http://www.json.org/">English</a>
+这里拿出一些必要且简单的说明.</li>
+</ol>
+<h2 id="rpcqing-qiu-suo-bi-yao-de-can-shu"><a class="header-anchor no-hover-padding" href="#rpcqing-qiu-suo-bi-yao-de-can-shu" aria-label="Anchor link for: rpcqing-qiu-suo-bi-yao-de-can-shu"><span class="link-icon" aria-hidden="true"></span></a>
+rpc请求所必要的参数</h2>
+<ol>
+<li>请求的对象需要通过json的格式发往server端</li>
+<li>请求对象需要包括下面四个对象</li>
+<li>jsonrpc:来说明所使用的JSON-RPC的版本</li>
+<li>methode:来说明说调用的方法名称</li>
+<li>params:调用方法的结构化参数值</li>
+<li>id:来唯一的表明发起的请求,客户端同样通过这个id来唯一的表示响应的信息,这个id可以是字符串,数字和NULL.如果没有这个值则认为这个请求是一个通知</li>
+</ol>
+<h2 id="rpcxiang-ying-suo-bi-yao-de-can-shu"><a class="header-anchor no-hover-padding" href="#rpcxiang-ying-suo-bi-yao-de-can-shu" aria-label="Anchor link for: rpcxiang-ying-suo-bi-yao-de-can-shu"><span class="link-icon" aria-hidden="true"></span></a>
+rpc响应所必要的参数</h2>
+<ol>
+<li>jsonrpc:同请求</li>
+<li>result: 如果一个请求成功的调用了方法,则必须有这一项,否则不必有这一项</li>
+<li>error:错误的对象.如果一个方法失败了,必须有该项,否则不必有</li>
+<li>id:该成员必须有,同请求.</li>
+</ol>
+<h2 id="cuo-wu-dui-xiang-suo-bi-yao-de-can-shu"><a class="header-anchor no-hover-padding" href="#cuo-wu-dui-xiang-suo-bi-yao-de-can-shu" aria-label="Anchor link for: cuo-wu-dui-xiang-suo-bi-yao-de-can-shu"><span class="link-icon" aria-hidden="true"></span></a>
+错误对象所必要的参数</h2>
+<ol>
+<li>code:使用整数来表明的异常错误类型,-32768到-32000为保留的错误代码,详细的错误代码所对应的解释请参考 <a href="http://wiki.geekdream.com/Specification/json-rpc_2.0.html">中文</a></li>
+<li>message:描述错误信息</li>
+<li>data:包含错误复杂信息的成员,可忽略.</li>
+</ol>
+<h2 id="shi-yong-curllai-ce-shi-yi-jing-jian-li-de-json-rpcfu-wu"><a class="header-anchor no-hover-padding" href="#shi-yong-curllai-ce-shi-yi-jing-jian-li-de-json-rpcfu-wu" aria-label="Anchor link for: shi-yong-curllai-ce-shi-yi-jing-jian-li-de-json-rpcfu-wu"><span class="link-icon" aria-hidden="true"></span></a>
+使用curl来测试已经建立的json-rpc服务</h2>
+<ul>
+<li>需要按照前文,建立好对应的服务</li>
+</ul>
+<h3 id="ce-shi-dan-ge-qing-qiu"><a class="header-anchor no-hover-padding" href="#ce-shi-dan-ge-qing-qiu" aria-label="Anchor link for: ce-shi-dan-ge-qing-qiu"><span class="link-icon" aria-hidden="true"></span></a>
+测试单个请求</h3>
+<p>通过使用curl来发送http的请求,当然也可以通过java的HttpClient来发送,假设RpcServer部署相应的服务,且url为<code>/rpc</code>,我们使用server端的"getString"方法,server端部署在192.168.1.10的8080端口上,那么代码如下</p>
+<pre class="z-code"><code><span class="z-text z-plain">curl -XPOST &quot;http://192.168.1.10:8080/rpc&quot; -d &quot;{&quot;jsonrpc&quot;:&quot;2.0&quot;, &quot;id&quot;:&quot;10&quot;, &quot;method&quot;:&quot;getString&quot;, &quot;params&quot;:[&quot;Test&quot;]}&quot;
+</span></code></pre>
+<p>可以看到服务端返回这样的信息</p>
+<pre class="z-code"><code><span class="z-text z-plain">{&quot;jsonrpc&quot;:&quot;jsonrpc&quot;,&quot;id&quot;:&quot;null&quot;,&quot;error&quot;:{&quot;code&quot;:-32700,&quot;message&quot;:&quot;JSON parse error&quot;}}
+</span></code></pre>
+<p>说明发送的信息不是一个合法的JSON串,检查后发现因为curl发送数据的问题,需要对引号进行转义,更改后的请求命令如下:</p>
+<pre class="z-code"><code><span class="z-text z-plain">curl -XPOST &quot;http://192.168.1.10:8080/rpc&quot; -d &quot;{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;, \&quot;id\&quot;:\&quot;10\&quot;, \&quot;method\&quot;:\&quot;getString\&quot;, \&quot;params\&quot;:[\&quot;Test\&quot;]}&quot;
+</span></code></pre>
+<p>服务端返回信息:</p>
+<pre class="z-code"><code><span class="z-text z-plain">{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:&quot;10&quot;,&quot;result&quot;:&quot;{Test}&quot;}
+</span></code></pre>
+<p>信息正常的返回了,说明调用成功</p>
+<h3 id="ce-shi-pi-de-fang-shi-fa-song-qing-qiu"><a class="header-anchor no-hover-padding" href="#ce-shi-pi-de-fang-shi-fa-song-qing-qiu" aria-label="Anchor link for: ce-shi-pi-de-fang-shi-fa-song-qing-qiu"><span class="link-icon" aria-hidden="true"></span></a>
+测试批的方式发送请求</h3>
+<p>原理非常简单,只需要将发送的一组请求使用数组的形式括起来即可,代码如下:</p>
+<pre class="z-code"><code><span class="z-text z-plain">curl -XPOST &quot;http://192.168.101.188:8080/rpc&quot; -d &quot;[{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;, \&quot;id\&quot;:\&quot;1\&quot;, \&quot;method\&quot;:\&quot;getString\&quot;, \&quot;params\&quot;:[\&quot;Test\&quot;]},{\&quot;jsonrpc\&quot;:\&quot;2.0\&quot;, \&quot;id\&quot;:\&quot;2\&quot;, \&quot;method\&quot;:\&quot;getString\&quot;, \&quot;params\&quot;:[\&quot;哈哈\&quot;]}]&quot;
+</span></code></pre>
+<p>服务端返回:</p>
+<pre class="z-code"><code><span class="z-text z-plain">[{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:&quot;1&quot;,&quot;result&quot;:&quot;{Test}&quot;}
+</span><span class="z-text z-plain">,{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:&quot;2&quot;,&quot;result&quot;:&quot;{哈哈}&quot;}
+</span></code></pre>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20161219mysql-1146-1017/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">使用navicat 修改MySQL数据库的某个表后,无法再读取该表(MySQL-#1146-#1017)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20161206quickstartforjsonrpc4j/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">jsonrpc4j初步使用(Quick Start For Jsonrpc4j)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#gai-shu">概述</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#json-rpcde-biao-zhun-xiang-xi-shuo-ming">json-rpc的标准详细说明</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#rpcqing-qiu-suo-bi-yao-de-can-shu">rpc请求所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#rpcxiang-ying-suo-bi-yao-de-can-shu">rpc响应所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#cuo-wu-dui-xiang-suo-bi-yao-de-can-shu">错误对象所必要的参数</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#shi-yong-curllai-ce-shi-yi-jing-jian-li-de-json-rpcfu-wu">使用curl来测试已经建立的json-rpc服务</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#ce-shi-dan-ge-qing-qiu">测试单个请求</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20161212usejsonrpcformattogetwhatyouwant/#ce-shi-pi-de-fang-shi-fa-song-qing-qiu">测试批的方式发送请求</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>

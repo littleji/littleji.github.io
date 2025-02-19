@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh" >
+
+<head>
+    <meta charset="UTF-8"><meta http-equiv="Content-Security-Policy"
+content="default-src 'self';font-src &#x27;self&#x27; data: 'self';img-src &#x27;self&#x27; https:&#x2F;&#x2F;* data:;media-src &#x27;self&#x27;;style-src &#x27;self&#x27; 'unsafe-inline';frame-src player.vimeo.com https:&#x2F;&#x2F;www.youtube-nocookie.com;connect-src 'self';script-src 'self' 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="base" content="https://blog.littleji.com">
+
+    
+    <title>littleji's blog • Logstash Grok 概览(OverviewOfLogstashGrok)</title>
+
+    
+    
+    
+
+    
+    
+
+    
+    
+    
+        
+            <link rel="stylesheet" href="https://blog.littleji.com/custom_subset.css?h=0b9535a28bc3d5bf2321">
+        
+    
+
+    
+        <link rel="stylesheet" href="https://blog.littleji.com/main.css?h=e38cfa6902d00356cd66" />
+
+    <meta name="color-scheme" content="light dark" />
+        <meta name="description" content="" />
+        <meta property="og:description" content="" />
+
+    
+
+    <meta property="og:title" content="Logstash Grok 概览(OverviewOfLogstashGrok)" />
+    <meta property="og:type" content="article" />
+
+    
+<meta property="og:locale" content="en_GB" />
+
+    <meta property="og:url" content="https:&#x2F;&#x2F;blog.littleji.com&#x2F;blog&#x2F;20181025logstashgrokoverview&#x2F;" /><meta property="og:site_name" content="littleji&#x27;s blog">
+        <noscript><link rel="stylesheet" href="https://blog.littleji.com/no_js.css"/></noscript>
+        <script type="text/javascript" src="https://blog.littleji.com/js/initializeTheme.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/themeSwitcher.min.js"></script>
+        <script defer src="https://blog.littleji.com/js/searchElasticlunr.min.js?h=3626c0ef99daa745b31e"></script>
+
+        <script defer src="https://blog.littleji.com/js/lunr/lunrStemmerSupport.min.js"></script>
+            <script defer src="https://blog.littleji.com/js/lunr/lunr.zh.min.js"></script></head>
+
+
+<body>
+    <header>
+    <nav class="navbar">
+        <div class="nav-title">
+            <a class="home-title" href="https://blog.littleji.com">littleji&#x27;s blog</a>
+        </div>
+            <div class="nav-navs">
+                <ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/blog/">home
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/archive/">archive
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/tags/">tags
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;github.com&#x2F;littleji">github
+                                </a>
+                            </li>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding" href="https://blog.littleji.com/projects/">projects
+                                </a>
+                            </li>
+                        <li class="menu-icons-container">
+                        <ul class="menu-icons-group">
+                            <li class="js menu-icon">
+                                <div role="button" tabindex="0" id="search-button" class="search-icon interactive-icon" title="Press $SHORTCUT to open search" aria-label="Press $SHORTCUT to open search">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                                    </svg>
+                                </div>
+                            </li>
+
+                            
+                            
+
+                            <li class="theme-switcher-wrapper js"><div
+        title="Toggle dark&#x2F;light mode"
+        class="theme-switcher"
+        tabindex="0"
+        role="button"
+        aria-label="Toggle dark mode"
+        aria-pressed="false">
+    </div><div
+        title="Reset mode to default"
+        class="theme-resetter arrow"
+        tabindex="0"
+        role="button"
+        aria-hidden="true"
+        aria-label="Reset mode to default">
+    </div>
+
+</li>
+</ul>
+                    </li>
+                </ul>
+            </div>
+        
+    </nav>
+</header>
+
+    <div class="content">
+
+        
+        
+
+
+
+
+<main>
+    <article>
+        <h1 class="article-title">
+            Logstash Grok 概览(OverviewOfLogstashGrok)
+        </h1>
+
+        <ul class="meta">
+                <li>25th Oct 2018</li><li title="976 words"><span class='separator' aria-hidden='true'>•</span>5 min read</li><li class="tag"><span class='separator' aria-hidden='true'>•</span>Tags:&nbsp;</li><li class="tag"><a href="https://blog.littleji.com/tags/logstash/">Logstash</a></li></ul><ul class="meta last-updated"><li>Updated on 8th Feb 2025</li>
+        </ul>
+            
+
+<div class="toc-container">
+    
+        <h3>Table of Contents</h3>
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#bei-jing">背景</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#ce-shi-ni-de-grok-pattern">测试你的 Grok pattern</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#grok-de-yi-xie-ji-ben-she-ding">Grok 的一些基本设定</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#yu-fa">语法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#yi-ge-shi-ji-de-li-zi">一个实际的例子</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#zheng-ze-biao-da-shi-ku">正则表达式库</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#zi-ding-yi-pattern">自定义 pattern</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#di-yi-chong-fang-shi-tian-jia-zi-ding-yi-pattern">第一种方式添加自定义 pattern</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#di-er-chong-fang-shi-tian-jia-zi-ding-yi-pattern">第二种方式添加自定义 pattern</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#grok-cha-jian-de-yi-xie-pei-zhi-xiang">Grok 插件的一些配置项</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#named-captures-only">named_captures_only</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#overwrite">overwrite</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#pattern-definitions">pattern_definitions</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#timeout-millis">timeout_millis</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#add-tag">add_tag</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#add-field">add_field</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+        
+
+        <section class="body"><h1 id="bei-jing"><a class="header-anchor no-hover-padding" href="#bei-jing" aria-label="Anchor link for: bei-jing"><span class="link-icon" aria-hidden="true"></span></a>
+背景</h1>
+<p>Grok 插件让 Logstash 在处理一定格式的日志文件的时候有了一定程度“正则表达”的功能。
+特别适用于解析一些非结构化的数据，并从中提取真正相关的信息至一些结构化 field 中。</p>
+<p>主要的使用场景在 syslog、apache 与其他的 webserver 具有这样特点的日志：这些日志都具有易人读但不易机读的特点。</p>
+<p>Logstash 默认有很多 patterns，你可以在 <a href="https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns">https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns</a> 找到。当然你也可以添加你自己的 pattern，这点我们稍后就会讲到。</p>
+<h1 id="ce-shi-ni-de-grok-pattern"><a class="header-anchor no-hover-padding" href="#ce-shi-ni-de-grok-pattern" aria-label="Anchor link for: ce-shi-ni-de-grok-pattern"><span class="link-icon" aria-hidden="true"></span></a>
+测试你的 Grok pattern</h1>
+<p>Debug 是人类进步的阶梯，想起来当时被正则表达式支配的恐惧了么？那时我们有一些工具来测试我们的正则表达式是否足够“强壮”，grok 的作者也提供了两个网站，允许你通过这个来测试你的 grok 表达式，就跟你在测试正表达式的时候一样。分别是 <a href="http://grokdebug.herokuapp.com">http://grokdebug.herokuapp.com </a> 和 <a href="http://grokconstructor.appspot.com/"> http://grokconstructor.appspot.com/</a></p>
+<h1 id="grok-de-yi-xie-ji-ben-she-ding"><a class="header-anchor no-hover-padding" href="#grok-de-yi-xie-ji-ben-she-ding" aria-label="Anchor link for: grok-de-yi-xie-ji-ben-she-ding"><span class="link-icon" aria-hidden="true"></span></a>
+Grok 的一些基本设定</h1>
+<h2 id="yu-fa"><a class="header-anchor no-hover-padding" href="#yu-fa" aria-label="Anchor link for: yu-fa"><span class="link-icon" aria-hidden="true"></span></a>
+语法</h2>
+<p>Grok 使用如下的语法进行匹配操作。</p>
+<pre class="z-code"><code><span class="z-text z-plain">%{SYNTAX:SEMANTIC}
+</span></code></pre>
+<p>其中 <code>SYNTAX</code>是你想匹配的表达式的名称，SEMANTIC 则是存储匹配后的文本的变量名，比如：</p>
+<pre class="z-code"><code><span class="z-text z-plain"># 待匹配的文本为
+</span><span class="z-text z-plain">192.168.1.1 2016-04-26T19:55:15Z
+</span><span class="z-text z-plain"># 一个完整的匹配式
+</span><span class="z-text z-plain">%{IPV4:ip} %{TIMESTAMP_ISO8601:time}
+</span><span class="z-text z-plain"># pattern 为
+</span><span class="z-text z-plain">IPV4 (?&lt;![0-9])(?:(?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](?:25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))(?![0-9])
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">TIMESTAMP_ISO8601 %{YEAR}-%{MONTHNUM}-%{MONTHDAY}[T ]%{HOUR}:?%{MINUTE}(?::?%{SECOND})?%{ISO8601_TIMEZONE}?
+</span></code></pre>
+<p>那么 <code>IPV4</code> 和 <code>TIMESTAMP_ISO8601</code>就是 <code>SYNTAX</code>，<code>ip</code> 和 <code>time</code> 就是 SEMANTIC。</p>
+<h2 id="yi-ge-shi-ji-de-li-zi"><a class="header-anchor no-hover-padding" href="#yi-ge-shi-ji-de-li-zi" aria-label="Anchor link for: yi-ge-shi-ji-de-li-zi"><span class="link-icon" aria-hidden="true"></span></a>
+一个实际的例子</h2>
+<p>一个 logstash 的配置文件，内容如下：</p>
+<pre class="z-code"><code><span class="z-text z-plain">input {
+</span><span class="z-text z-plain">  file {
+</span><span class="z-text z-plain">    path =&gt; &quot;/var/log/http.log&quot;
+</span><span class="z-text z-plain">  }
+</span><span class="z-text z-plain">}
+</span><span class="z-text z-plain">filter {
+</span><span class="z-text z-plain">  grok {
+</span><span class="z-text z-plain">    match =&gt; { &quot;message&quot; =&gt; &quot;%{IP:client} %{WORD:method} %{URIPATHPARAM:request} %{NUMBER:bytes} %{NUMBER:duration}&quot; }
+</span><span class="z-text z-plain">  }
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<p>运行后，这条 message 将会在 grok 过滤之后上报一条 event，内容如下：</p>
+<pre class="z-code"><code><span class="z-text z-plain">client: 55.3.244.1
+</span><span class="z-text z-plain">method: GET
+</span><span class="z-text z-plain">request: /index.html
+</span><span class="z-text z-plain">bytes: 15824
+</span><span class="z-text z-plain">duration: 0.043
+</span></code></pre>
+<h1 id="zheng-ze-biao-da-shi-ku"><a class="header-anchor no-hover-padding" href="#zheng-ze-biao-da-shi-ku" aria-label="Anchor link for: zheng-ze-biao-da-shi-ku"><span class="link-icon" aria-hidden="true"></span></a>
+正则表达式库</h1>
+<p>Grok 使用了 <a href="https://github.com/kkos/oniguruma/blob/master/doc/RE">oniguruma</a> 的正则表达式，所以所有在该文档中出现的匹配语法都可以使用。</p>
+<h1 id="zi-ding-yi-pattern"><a class="header-anchor no-hover-padding" href="#zi-ding-yi-pattern" aria-label="Anchor link for: zi-ding-yi-pattern"><span class="link-icon" aria-hidden="true"></span></a>
+自定义 pattern</h1>
+<p>Grok 自带了一些常用的匹配规则，比如：IPV4、IPV6、YEAR等，但是当我们想要写一些自己的规则的时候，grok 也提供了支持，这里主要有两种方式：</p>
+<h2 id="di-yi-chong-fang-shi-tian-jia-zi-ding-yi-pattern"><a class="header-anchor no-hover-padding" href="#di-yi-chong-fang-shi-tian-jia-zi-ding-yi-pattern" aria-label="Anchor link for: di-yi-chong-fang-shi-tian-jia-zi-ding-yi-pattern"><span class="link-icon" aria-hidden="true"></span></a>
+第一种方式添加自定义 pattern</h2>
+<p>直接使用下面的 pattern 结构：</p>
+<pre class="z-code"><code><span class="z-text z-plain"> (?&lt;field_name&gt;the pattern here)
+</span></code></pre>
+<p>其中 field_name 可以理解为上文的 SEMANTIC，后面则跟的是实际的匹配表达式，比如这样：</p>
+<pre class="z-code"><code><span class="z-text z-plain">(?&lt;queue_id&gt;[0-9A-F]{10,11})
+</span></code></pre>
+<h2 id="di-er-chong-fang-shi-tian-jia-zi-ding-yi-pattern"><a class="header-anchor no-hover-padding" href="#di-er-chong-fang-shi-tian-jia-zi-ding-yi-pattern" aria-label="Anchor link for: di-er-chong-fang-shi-tian-jia-zi-ding-yi-pattern"><span class="link-icon" aria-hidden="true"></span></a>
+第二种方式添加自定义 pattern</h2>
+<p>第二种方式就如同我们一开始使用的一样，在指定的 pattern 文件夹，添加即可比如：</p>
+<pre class="z-code"><code><span class="z-text z-plain"># 在 ./pattern/postfix 添加
+</span><span class="z-text z-plain">POSTFIX_QUEUEID [0-9A-F]{10,11}
+</span></code></pre>
+<p>在实际匹配的时候写入</p>
+<pre class="z-code"><code><span class="z-text z-plain">%{POSTFIX_QUEUEID:queue_id}
+</span></code></pre>
+<p>使用的效果与第一种方式完全一致。</p>
+<p>Logstash 的配置文件中可以指定 自定义 pattern 的位置，比如：</p>
+<pre class="z-code"><code><span class="z-text z-plain">filter {
+</span><span class="z-text z-plain">  grok {
+</span><span class="z-text z-plain">    patterns_dir =&gt; [&quot;./patterns&quot;]
+</span><span class="z-text z-plain">    match =&gt; { &quot;message&quot; =&gt; &quot;%{SYSLOGBASE} %{POSTFIX_QUEUEID:queue_id}: %{GREEDYDATA:syslog_message}&quot; }
+</span><span class="z-text z-plain">  }
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<p>就是读取当前目录下的 patterns 文件。</p>
+<h1 id="grok-cha-jian-de-yi-xie-pei-zhi-xiang"><a class="header-anchor no-hover-padding" href="#grok-cha-jian-de-yi-xie-pei-zhi-xiang" aria-label="Anchor link for: grok-cha-jian-de-yi-xie-pei-zhi-xiang"><span class="link-icon" aria-hidden="true"></span></a>
+Grok 插件的一些配置项</h1>
+<p>如果需要定制化 Grok 插件的一些匹配配置</p>
+<table><thead><tr><th>配置项名称</th><th>匹配项类型</th><th>是否必须</th></tr></thead><tbody>
+<tr><td>break_on_match</td><td>boolean</td><td>no</td></tr>
+<tr><td>keep_empty_capture</td><td>boolean</td><td>no</td></tr>
+<tr><td>match</td><td>hash</td><td>no</td></tr>
+<tr><td>named_captures_only</td><td>boolean</td><td>no</td></tr>
+<tr><td>overwrite</td><td>array</td><td>no</td></tr>
+<tr><td>pattern_definitions</td><td>hash</td><td>no</td></tr>
+<tr><td>patterns_dir</td><td>array</td><td>no</td></tr>
+<tr><td>patterns_files_glob</td><td>string</td><td>no</td></tr>
+<tr><td>tag_on_failure</td><td>array</td><td>no</td></tr>
+<tr><td>tag_on_timeout</td><td>string</td><td>no</td></tr>
+<tr><td>timeout_millis</td><td>number</td><td>no</td></tr>
+</tbody></table>
+<h2 id="named-captures-only"><a class="header-anchor no-hover-padding" href="#named-captures-only" aria-label="Anchor link for: named-captures-only"><span class="link-icon" aria-hidden="true"></span></a>
+named_captures_only</h2>
+<p>默认值： <code>true</code>
+意义：当该值为 <code>true</code> 时，只会从数据中捕获有 <code>SEMANTIC</code> 的信息，其他的匹配项不存储。</p>
+<h2 id="overwrite"><a class="header-anchor no-hover-padding" href="#overwrite" aria-label="Anchor link for: overwrite"><span class="link-icon" aria-hidden="true"></span></a>
+overwrite</h2>
+<p>默认值：[]
+意义：这个属性允许你在输出匹配结果之前，重写该匹配结果中的一项或多项，比如：</p>
+<pre class="z-code"><code><span class="z-text z-plain"># 原始数据
+</span><span class="z-text z-plain">734742416494845952,Android,&quot;In trade, military and EVERYTHING else, it will be AMERICA FIRST! This will quickly lead to our ultimate goal: MAKE AMERICA GREAT AGAIN!&quot;,2016-05-23T13:46:57Z
+</span><span class="z-text z-plain"># 配置文件
+</span><span class="z-text z-plain">filter {
+</span><span class="z-text z-plain">  grok {
+</span><span class="z-text z-plain">    patterns_dir =&gt; [&quot;/root/custom-patterns.txt&quot;]
+</span><span class="z-text z-plain">    match =&gt; { &quot;message&quot; =&gt; &quot;%{ID:id},%{DEVICE:device},%{MESSAGE_BODY:message},%{TIMESTAMP_ISO8601:timestamp}&quot; }
+</span><span class="z-text z-plain">  }
+</span><span class="z-text z-plain">}
+</span><span class="z-text z-plain"># 结果1 没有overwrite选项
+</span><span class="z-text z-plain">&quot;message&quot;: [
+</span><span class="z-text z-plain">&quot;734742416494845952,Android,&quot;In trade, military and EVERYTHING else, it will be AMERICA FIRST! This will quickly lead to our ultimate goal: MAKE AMERICA GREAT AGAIN!&quot;,2016-05-23T13:46:57Z&quot;
+</span><span class="z-text z-plain">,
+</span><span class="z-text z-plain">&quot;&quot;In trade, military and EVERYTHING else, it will be AMERICA FIRST! This will quickly lead to our ultimate goal: MAKE AMERICA GREAT AGAIN!&quot;&quot;
+</span><span class="z-text z-plain">]，
+</span><span class="z-text z-plain">&quot;host&quot;: &quot;localhost&quot;,
+</span><span class="z-text z-plain">&quot;@timestamp&quot;: &quot;2018-10-21T01:09:04.089Z&quot;,
+</span><span class="z-text z-plain">&quot;device&quot;: &quot;Android&quot;,
+</span><span class="z-text z-plain">&quot;id&quot;: &quot;734742416494845952&quot;,
+</span><span class="z-text z-plain">&quot;timestamp&quot;: &quot;2016-05-23T13:46:57Z&quot;,
+</span><span class="z-text z-plain">&quot;path&quot;: &quot;/root/trump-test.csv&quot;,
+</span><span class="z-text z-plain">&quot;@version&quot;: &quot;1&quot;
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># 结果2 设置overwrite选项     overwrite =&gt; [&quot;message&quot;]
+</span><span class="z-text z-plain">&quot;message&quot;: &quot;In trade, military and EVERYTHING else, it will be AMERICA FIRST! This will quickly lead to our ultimate goal: MAKE AMERICA GREAT AGAIN!&quot;,
+</span><span class="z-text z-plain">&quot;host&quot;: &quot;localhost&quot;,
+</span><span class="z-text z-plain">&quot;@timestamp&quot;: &quot;2018-10-21T01:09:04.089Z&quot;,
+</span><span class="z-text z-plain">&quot;device&quot;: &quot;Android&quot;,
+</span><span class="z-text z-plain">&quot;id&quot;: &quot;734742416494845952&quot;,
+</span><span class="z-text z-plain">&quot;timestamp&quot;: &quot;2016-05-23T13:46:57Z&quot;,
+</span><span class="z-text z-plain">&quot;path&quot;: &quot;/root/trump-test.csv&quot;,
+</span><span class="z-text z-plain">&quot;@version&quot;: &quot;1&quot;
+</span></code></pre>
+<p>可以看到，原来的 <code>message</code> 属性存储的是原始的输入信息，增加了 overwrite 选项后，则由匹配到的 message 信息将其替换。</p>
+<h2 id="pattern-definitions"><a class="header-anchor no-hover-padding" href="#pattern-definitions" aria-label="Anchor link for: pattern-definitions"><span class="link-icon" aria-hidden="true"></span></a>
+pattern_definitions</h2>
+<p>默认值：空
+意义：可以再该项中，以键值对的方式输入 grok 表达式，也就是把patterns_dir 文件内的 pattern 写在这个属性里，比如：</p>
+<pre class="z-code"><code><span class="z-text z-plain"> pattern_definitions =&gt; {
+</span><span class="z-text z-plain">      &quot;ID&quot; =&gt; &quot;\d+(?=,)&quot;
+</span><span class="z-text z-plain">      &quot;DEVICE&quot; =&gt; &quot;[a-zA-Z]+(?=,)&quot;
+</span><span class="z-text z-plain">      &quot;MESSAGE_BODY&quot; =&gt; &quot;.+(?=,2)&quot;
+</span><span class="z-text z-plain">    }
+</span></code></pre>
+<h2 id="timeout-millis"><a class="header-anchor no-hover-padding" href="#timeout-millis" aria-label="Anchor link for: timeout-millis"><span class="link-icon" aria-hidden="true"></span></a>
+timeout_millis</h2>
+<p>默认值：30000
+意义：在执行了所定义的时间后，终止正则匹配，设置为0则没有超时时间。</p>
+<h2 id="add-tag"><a class="header-anchor no-hover-padding" href="#add-tag" aria-label="Anchor link for: add-tag"><span class="link-icon" aria-hidden="true"></span></a>
+add_tag</h2>
+<p>默认值：[]
+意义：在匹配成功后，增加一个或多个 tag 字段</p>
+<h2 id="add-field"><a class="header-anchor no-hover-padding" href="#add-field" aria-label="Anchor link for: add-field"><span class="link-icon" aria-hidden="true"></span></a>
+add_field</h2>
+<p>默认值：{}
+意义：在匹配成功后，增加一个或多个 field、value对，例如：</p>
+<pre class="z-code"><code><span class="z-text z-plain"># 输入
+</span><span class="z-text z-plain">依然是上文中使用的例子
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># Logstash 配置文件如下
+</span><span class="z-text z-plain">filter {
+</span><span class="z-text z-plain">  grok {
+</span><span class="z-text z-plain">    pattern_definitions =&gt; {
+</span><span class="z-text z-plain">      &quot;ID&quot; =&gt; &quot;\d+(?=,)&quot;
+</span><span class="z-text z-plain">      &quot;DEVICE&quot; =&gt; &quot;[a-zA-Z]+(?=,)&quot;
+</span><span class="z-text z-plain">      &quot;MESSAGE_BODY&quot; =&gt; &quot;.+(?=,2)&quot;
+</span><span class="z-text z-plain">    }
+</span><span class="z-text z-plain">    #patterns_dir =&gt; [&quot;/root/custom-patterns.txt&quot;]
+</span><span class="z-text z-plain">    match =&gt; { &quot;message&quot; =&gt; &quot;%{ID:id},%{DEVICE:device},%{MESSAGE_BODY:message},%{TIMESTAMP_ISO8601:timestamp}&quot; }
+</span><span class="z-text z-plain">    overwrite =&gt; [&quot;message&quot;]
+</span><span class="z-text z-plain">    add_tag =&gt; [ &quot;test_%{id}&quot;]
+</span><span class="z-text z-plain">    add_field =&gt; {
+</span><span class="z-text z-plain">      &quot;test_%{timestamp}&quot; =&gt; &quot;test&quot;
+</span><span class="z-text z-plain">      }
+</span><span class="z-text z-plain">    remove_field =&gt; [&quot;device&quot;]
+</span><span class="z-text z-plain">  }
+</span><span class="z-text z-plain">}
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># 结果如下
+</span><span class="z-text z-plain">&quot;host&quot;: &quot;localhost&quot;,
+</span><span class="z-text z-plain">&quot;timestamp&quot;: &quot;2016-05-23T13:46:57Z&quot;,
+</span><span class="z-text z-plain">&quot;id&quot;: &quot;734742416494845952&quot;,
+</span><span class="z-text z-plain">&quot;tags&quot;: [
+</span><span class="z-text z-plain">&quot;test_734742416494845952&quot;
+</span><span class="z-text z-plain">],
+</span><span class="z-text z-plain">&quot;@version&quot;: &quot;1&quot;,
+</span><span class="z-text z-plain">&quot;@timestamp&quot;: &quot;2018-10-21T01:47:31.552Z&quot;,
+</span><span class="z-text z-plain">&quot;message&quot;: &quot;In trade, military and EVERYTHING else, it will be AMERICA FIRST! This will quickly lead to our ultimate goal: MAKE AMERICA GREAT AGAIN!&quot;,
+</span><span class="z-text z-plain">&quot;path&quot;: &quot;/root/trump-test.csv&quot;,
+</span><span class="z-text z-plain">&quot;test_2016-05-23T13:46:57Z&quot;: &quot;test&quot;
+</span></code></pre>
+<h1 id="can-kao"><a class="header-anchor no-hover-padding" href="#can-kao" aria-label="Anchor link for: can-kao"><span class="link-icon" aria-hidden="true"></span></a>
+参考</h1>
+<p><a href="https://www.elastic.co/guide/en/logstash/current/plugins-filters-grok.html">grok manual</a></p>
+
+        </section>
+
+        
+                
+                
+                    
+                        
+                        
+                        
+                    
+                    
+                        
+                        
+                        
+                    
+                
+                
+            <nav class="full-width article-navigation">
+                <div><a href="https://blog.littleji.com/blog/20181127generativevsdiscriminative/" aria-label="Next" aria-describedby="left_title"><span class="arrow">←</span>&nbsp;Next</a>
+                <p aria-hidden="true" id="left_title">生成模型VS判别模型(Gnerative VS Discriminative)</p></div>
+                <div><a href="https://blog.littleji.com/blog/20181022probabilisticgraphicalmodels1/" aria-label="Prev" aria-describedby="right_title">Prev&nbsp;<span class="arrow">→</span></a>
+                <p aria-hidden="true" id="right_title">概率图模型之一(ProbabilisticGraphicalModel-PGM)</p></div>
+            </nav>
+        
+        
+
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+            
+            
+            
+
+            
+        
+        
+
+    </article>
+</main>
+
+    <div id="button-container">
+        
+        
+            <div id="toc-floating-container">
+                <input type="checkbox" id="toc-toggle" class="toggle"/>
+                <label for="toc-toggle" class="overlay"></label>
+                <label for="toc-toggle" id="toc-button" class="button" title="Toggle Table of Contents">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M414.82-193.094q-18.044 0-30.497-12.32-12.453-12.319-12.453-30.036t12.453-30.086q12.453-12.37 30.497-12.37h392.767q17.237 0 29.927 12.487 12.69 12.486 12.69 30.203 0 17.716-12.69 29.919t-29.927 12.203H414.82Zm0-244.833q-18.044 0-30.497-12.487Q371.87-462.9 371.87-480.45t12.453-29.92q12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.511 12.69 12.512 12.69 29.845 0 17.716-12.69 30.086-12.69 12.37-29.927 12.37H414.82Zm0-245.167q-18.044 0-30.497-12.32t-12.453-30.037q0-17.716 12.453-30.086 12.453-12.369 30.497-12.369h392.767q17.237 0 29.927 12.486 12.69 12.487 12.69 30.203 0 17.717-12.69 29.92-12.69 12.203-29.927 12.203H414.82ZM189.379-156.681q-32.652 0-55.878-22.829t-23.226-55.731q0-32.549 23.15-55.647 23.151-23.097 55.95-23.097 32.799 0 55.313 23.484 22.515 23.484 22.515 56.246 0 32.212-22.861 54.893-22.861 22.681-54.963 22.681Zm0-245.167q-32.652 0-55.878-23.134-23.226-23.135-23.226-55.623 0-32.487 23.467-55.517t56.12-23.03q32.102 0 54.721 23.288 22.62 23.288 22.62 55.775 0 32.488-22.861 55.364-22.861 22.877-54.963 22.877Zm-.82-244.833q-32.224 0-55.254-23.288-23.03-23.289-23.03-55.623 0-32.333 23.271-55.364 23.272-23.03 55.495-23.03 32.224 0 55.193 23.288 22.969 23.289 22.969 55.622 0 32.334-23.21 55.364-23.21 23.031-55.434 23.031Z"/></svg>
+                </label>
+                <div class="toc-content">
+                    
+
+<div class="toc-container">
+    
+
+    <ul>
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#bei-jing">背景</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#ce-shi-ni-de-grok-pattern">测试你的 Grok pattern</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#grok-de-yi-xie-ji-ben-she-ding">Grok 的一些基本设定</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#yu-fa">语法</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#yi-ge-shi-ji-de-li-zi">一个实际的例子</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#zheng-ze-biao-da-shi-ku">正则表达式库</a>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#zi-ding-yi-pattern">自定义 pattern</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#di-yi-chong-fang-shi-tian-jia-zi-ding-yi-pattern">第一种方式添加自定义 pattern</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#di-er-chong-fang-shi-tian-jia-zi-ding-yi-pattern">第二种方式添加自定义 pattern</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#grok-cha-jian-de-yi-xie-pei-zhi-xiang">Grok 插件的一些配置项</a>
+                    
+                        <ul>
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#named-captures-only">named_captures_only</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#overwrite">overwrite</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#pattern-definitions">pattern_definitions</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#timeout-millis">timeout_millis</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#add-tag">add_tag</a>
+                                        
+                                    </li>
+                                
+                            
+                                
+                                    <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#add-field">add_field</a>
+                                        
+                                    </li>
+                                
+                            
+                        </ul>
+                    
+                </li>
+            
+        
+            
+            
+                <li><a href="https://blog.littleji.com/blog/20181025logstashgrokoverview/#can-kao">参考</a>
+                    
+                </li>
+            
+        
+    </ul>
+</div>
+
+
+                </div>
+            </div>
+        
+
+        
+        
+
+        
+        <a href="#" id="top-button" class="no-hover-padding" title="Go to the top of the page">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"/></svg>
+        </a>
+    </div>
+
+
+<script defer src="https://blog.littleji.com/js/mermaid.min.js"></script><span id="copy-success" class="hidden">
+        Copied!
+    </span>
+    <span id="copy-init" class="hidden">
+        Copy code to clipboard
+    </span>
+    <script defer src="https://blog.littleji.com/js/copyCodeToClipboard.min.js"></script>
+    </div>
+    <footer>
+    <section>
+        <nav class="socials nav-navs"><ul>
+                        
+                            <li>
+                                <a class="nav-links no-hover-padding social" rel=" me"  href="https://github.com/littleji/">
+                                    <img loading="lazy" alt="github" title="github" src="https://blog.littleji.com/social_icons/github.svg">
+                                </a>
+                            </li>
+                        
+                    
+                </ul>
+            
+        </nav>
+
+        
+        <nav class="nav-navs">
+                <small>
+                    <ul>
+                        
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;pages&#x2F;about&#x2F;">
+                                about
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;privacy&#x2F;">
+                                privacy
+                            </a>
+                        </li>
+                    
+                        <li><a class="nav-links no-hover-padding" href="https:&#x2F;&#x2F;blog.littleji.com&#x2F;sitemap.xml">
+                                sitemap
+                            </a>
+                        </li>
+                    
+                    </ul>
+                </small>
+        
+        </nav>
+
+        <div class="credits">
+            <small>
+                
+
+                
+                Powered by
+                <a rel=""  href="https://www.getzola.org">Zola</a>
+                &amp;
+                <a rel=""  href="https://github.com/welpo/tabi">tabi</a>
+
+                </small>
+        </div>
+    </section>
+
+    <div id="searchModal" class="search-modal js" role="dialog" aria-labelledby="modalTitle">
+    <h1 id="modalTitle" class="visually-hidden">Search</h1>
+    <div id="modal-content">
+        <div id="searchBar">
+            <div class="search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/>
+                </svg>
+            </div>
+            <input id="searchInput" role="combobox" autocomplete="off" spellcheck="false" aria-expanded="false" aria-controls="results-container" placeholder="Search…"/>
+            <div id="clear-search" class="close-icon interactive-icon" tabindex="0" role="button" title="Clear search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                </svg>
+            </div>
+        </div>
+        <div id="results-container">
+            <div id="results-info"><span id="zero_results"> No results</span>
+                <span id="one_results"> 1 result</span>
+                <span id="many_results"> $NUMBER results</span><span id="two_results"> $NUMBER results</span>
+                <span id="few_results"> $NUMBER results</span>
+            </div>
+            <div id="results" role="listbox"></div>
+        </div>
+    </div>
+</div>
+</footer>
+
+</body>
+
+</html>
